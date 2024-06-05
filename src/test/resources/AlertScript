@@ -1,0 +1,3 @@
+function setInnerText(id, value) {
+  document.getElementById(id).innerHTML = '<p>' + value + '</p>';
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      table[id^="t1"], th[id^="t1"], td[id^="t1"] {
+          border: 1px solid black;
+      }
+    </style>
+    <title>Example Page</title>
+  </head>
+  <body>
+    <table id="t0" style="width:100%">
+      <tr id="t0-r0">
+        <td id="t0-r0-c0">
+          <p id="para-1">This is paragraph one.</p>
+          <p id="para-2">This is paragraph two.</p>
+          <p id="para-3">This is paragraph three.</p>
+          <p id="hidden-para" hidden>This paragraph should be hidden.</p>
+        </td>
+        <td id="t0-r0-c1">
+          <div id="form-div">
+            <form id="form" action="/action_page.php">
+              <label for="input-field">Input: </label>
+              <input type="text" name="input-field" id="input-field" value="Nordstrom"><br>
+              <label for="checkbox">Check: </label>
+              <input type="checkbox" name="checkbox" id="checkbox" value="checkbox"><br>
+              <input type="submit" value="Submit">
+            </form>
+          </div>
+        </td>
+      </tr>
+    </table>
+    
+    <table id="t1" style="width:100%">
+      <tr id="t1-h1">
+        <th id="t1-h1-c1">Firstname</th>
+        <th id="t1-h1-c2">Lastname</th> 
+        <th id="t1-h1-c3">Age</th>
+      </tr>
+      <tr id="t1-r1">
+        <td id="t1-r1-c1">Jill</td>
+        <td id="t1-r1-c2">Smith</td>
+        <td id="t1-r1-c3">50</td>
+      </tr>
+      <tr id="t1-r2">
+        <td id="t1-r2-c1">Eve</td>
+        <td id="t1-r2-c2">Jackson</td>
+        <td id="t1-r2-c3">94</td>
+      </tr>
+      <tr id="t1-r3">
+        <td id="t1-r3-c1">John</td>
+        <td id="t1-r3-c2">Doe</td>
+        <td id="t1-r3-c3">80</td>
+      </tr>
+    </table>
+  </body>
+</html>
