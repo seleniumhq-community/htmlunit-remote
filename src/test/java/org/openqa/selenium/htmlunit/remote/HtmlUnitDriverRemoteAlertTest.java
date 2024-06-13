@@ -45,7 +45,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
 
     @Test
     public void shouldBeAbleToDismissAlert() throws Exception {
-    	getWebDriver().get(testPage(ALERTS));
+        getWebDriver().get(testPage(ALERTS));
         getWebDriver().findElement(By.id("alert-to-dismiss")).click();
         getWait().until(alertIsPresent());
         HttpResponse response = server.dismissAlert(sessionId);
@@ -57,7 +57,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToAcceptAlert() throws Exception {
-    	getWebDriver().get(testPage(ALERTS));
+        getWebDriver().get(testPage(ALERTS));
         getWebDriver().findElement(By.id("alert-to-accept")).click();
         getWait().until(alertIsPresent());
         HttpResponse response = server.acceptAlert(sessionId);
@@ -69,7 +69,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToGetAlertText() throws Exception {
-    	getWebDriver().get(testPage(ALERTS));
+        getWebDriver().get(testPage(ALERTS));
         getWebDriver().findElement(By.id("alert-to-scrape")).click();
         Alert alert = getWait().until(alertIsPresent());
         HttpResponse response = server.getAlertText(sessionId);
@@ -83,7 +83,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToSendAlertText() throws Exception {
-    	getWebDriver().get(testPage(ALERTS));
+        getWebDriver().get(testPage(ALERTS));
         getWebDriver().findElement(By.id("prompt")).click();
         Alert alert = getWait().until(alertIsPresent());
         CommandPayload payload = DriverCommand.SET_ALERT_VALUE("success");

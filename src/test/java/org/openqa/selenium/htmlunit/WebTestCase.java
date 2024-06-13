@@ -739,15 +739,15 @@ public abstract class WebTestCase {
      * @throws IOException in case of error
      */
     protected String getFileContent(final String fileName) throws IOException {
-    	return getFileContent(getClass().getClassLoader(), fileName);
+        return getFileContent(getClass().getClassLoader(), fileName);
     }
     
     protected static String _getFileContent(final String fileName) {
-    	try {
-			return getFileContent(Thread.currentThread().getContextClassLoader(), fileName);
-		} catch (IOException e) {
-			return "";
-		}
+        try {
+            return getFileContent(Thread.currentThread().getContextClassLoader(), fileName);
+        } catch (IOException e) {
+            return "";
+        }
     }
     
     protected static String getFileContent(final ClassLoader classLoader, final String fileName) throws IOException {

@@ -45,7 +45,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToFindElement() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         CommandPayload payload = DriverCommand.FIND_ELEMENT("css selector", "p#para-1");
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
         HttpResponse response = server.findElement(request, sessionId);
@@ -57,7 +57,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldBeAbleToFindElements() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         CommandPayload payload = DriverCommand.FIND_ELEMENTS("css selector", "p");
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
         HttpResponse response = server.findElements(request, sessionId);
@@ -72,7 +72,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToFindElementFromElement() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement parent = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("tr#t0-r0"));
         String elementId = String.valueOf(parent.getId());
         CommandPayload payload = DriverCommand.FIND_CHILD_ELEMENT(elementId, "css selector", "td");
@@ -86,7 +86,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldBeAbleToFindElementsFromElement() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement parent = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("tr#t0-r0"));
         String elementId = String.valueOf(parent.getId());
         CommandPayload payload = DriverCommand.FIND_CHILD_ELEMENT(elementId, "css selector", "td");
@@ -101,7 +101,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToCheckIsElementSelected() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("input#checkbox"));
         HttpResponse response = server.isElementSelected(sessionId, String.valueOf(element.getId()));
         assertEquals("Failed checking is element selected", HTTP_OK, response.getStatus());
@@ -114,7 +114,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToGetElementAttribute() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("input#input-field"));
         element.clear();
         element.sendKeys("Hautelook");
@@ -125,7 +125,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToGetElementProperty() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("input#input-field"));
         element.clear();
         element.sendKeys("Hautelook");
@@ -136,7 +136,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToGetElementCssValue() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("table#t1"));
         HttpResponse response = server.getElementCssValue(sessionId, String.valueOf(element.getId()), "border-color");
         assertEquals("Failed getting element CSS value", HTTP_OK, response.getStatus());
@@ -145,7 +145,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToGetElementText() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("p#para-2"));
         HttpResponse response = server.getElementText(sessionId, String.valueOf(element.getId()));
         assertEquals("Failed getting element text", HTTP_OK, response.getStatus());
@@ -154,7 +154,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToGetElementTagName() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.id("form-div"));
         HttpResponse response = server.getElementTagName(sessionId, String.valueOf(element.getId()));
         assertEquals("Failed getting element tag name", HTTP_OK, response.getStatus());
@@ -163,7 +163,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToGetElementRect() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("td#t0-r0-c0"));
         HttpResponse response = server.getElementRect(sessionId, String.valueOf(element.getId()));
         assertEquals("Failed getting element rect", HTTP_OK, response.getStatus());
@@ -176,7 +176,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToCheckIsElementEnabled() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("input#checkbox"));
         HttpResponse response = server.isElementEnabled(sessionId, String.valueOf(element.getId()));
         assertEquals("Failed checking is element enabled", HTTP_OK, response.getStatus());
@@ -185,7 +185,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToClickElement() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("input#checkbox"));
         assertFalse("Element should not be selected", element.isSelected());
         HttpResponse response = server.elementClick(sessionId, String.valueOf(element.getId()));
@@ -195,7 +195,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToClearElement() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("input#input-field"));
         assertEquals("Initial field value", "Nordstrom", element.getDomProperty("value"));
         HttpResponse response = server.elementClear(sessionId, String.valueOf(element.getId()));
@@ -205,7 +205,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToSendKeysToElement() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         HtmlUnitWebElement element = (HtmlUnitWebElement) getWebDriver().findElement(By.cssSelector("input#input-field"));
         assertEquals("Initial field value", "Nordstrom", element.getDomProperty("value"));
         String elementId = String.valueOf(element.getId());

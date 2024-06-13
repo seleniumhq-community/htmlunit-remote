@@ -81,7 +81,7 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToSwitchToFrame() throws Exception {
         getWebDriver().get(testPage(HOME));
-    	
+        
         final By main_frame1 = By.cssSelector("iframe#frame-a");
         final By main_frame2 = By.cssSelector("iframe#frame-b");
         
