@@ -37,7 +37,6 @@ import org.htmlunit.WebClient;
 import org.htmlunit.WebClientOptions;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.ComparisonFailure;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.Dimension;
@@ -68,23 +67,56 @@ public abstract class WebDriverTestCase extends WebTestCase {
 
     /** Timeout used when waiting for successful bind. */
     public static final int BIND_TIMEOUT = 1000;
+    
+    
+    private static class ServerHolder {
+        private static Server<?> INSTANCE;
+        
+        static {
+            INSTANCE = new NettyServer(defaultOptions(), createHandlers().httpHandler);
+            INSTANCE.start();
+            
+            Runtime.getRuntime().addShutdownHook(
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            INSTANCE.stop();
+                        }
+                    });
+        }
 
-    private static Server<?> server;
+        private static Handlers createHandlers() {
+            return new Handlers(Route.combine(
+                    get(TestPage.HOME.path).to(() -> req -> getPageFromResource("ExamplePage.html")),
+                    get(TestPage.SIMPLE.path).to(() -> req -> getPageFromResource("SimplePage.html")),
+                    get(TestPage.ALERTS.path).to(() -> req -> getPageFromResource("AlertsPage.html")),
+                    get(TestPage.FRAME_A.path).to(() -> req -> getPageFromResource("Frame_A.html")),
+                    get(TestPage.FRAME_B.path).to(() -> req -> getPageFromResource("Frame_B.html")),
+                    get(TestPage.FRAME_C.path).to(() -> req -> getPageFromResource("Frame_C.html")),
+                    get(TestPage.FRAME_D.path).to(() -> req -> getPageFromResource("Frame_D.html")),
+                    get("/readyz").to(() -> req -> new HttpResponse().setStatus(HTTP_NO_CONTENT))),
+                    null);
+        }
+        
+        private static HttpResponse getPageFromResource(final String resource) {
+            return new HttpResponse().setContent(Contents.utf8String(_getFileContent(resource)));
+        }
+    }
     
     public enum TestPage {
-    	HOME("/"),
-    	SIMPLE("/simple"),
-    	ALERTS("/alerts"),
-    	FRAME_A("/frame-a"),
-    	FRAME_B("/frame-b"),
-    	FRAME_C("/frame-c"),
-    	FRAME_D("/frame-d");
-    	
-    	String path;
+        HOME("/"),
+        SIMPLE("/simple"),
+        ALERTS("/alerts"),
+        FRAME_A("/frame-a"),
+        FRAME_B("/frame-b"),
+        FRAME_C("/frame-c"),
+        FRAME_D("/frame-d");
+        
+        String path;
 
-		TestPage(String path) {
-			this.path = path;
-		}
+        TestPage(String path) {
+            this.path = path;
+        }
     }
     
     /**
@@ -113,37 +145,14 @@ public abstract class WebDriverTestCase extends WebTestCase {
         }
         return driver;
     }
-
-	@BeforeClass
-	public static void setup() {
-		server = new NettyServer(defaultOptions(), createHandlers().httpHandler);
-		server.start();
-	}
-	
-	public static Handlers createHandlers() {
-        return new Handlers(Route.combine(
-        		get(TestPage.HOME.path).to(() -> req -> getPageFromResource("ExamplePage.html")),
-        		get(TestPage.SIMPLE.path).to(() -> req -> getPageFromResource("SimplePage.html")),
-        		get(TestPage.ALERTS.path).to(() -> req -> getPageFromResource("AlertsPage.html")),
-        		get(TestPage.FRAME_A.path).to(() -> req -> getPageFromResource("Frame_A.html")),
-        		get(TestPage.FRAME_B.path).to(() -> req -> getPageFromResource("Frame_B.html")),
-        		get(TestPage.FRAME_C.path).to(() -> req -> getPageFromResource("Frame_C.html")),
-        		get(TestPage.FRAME_D.path).to(() -> req -> getPageFromResource("Frame_D.html")),
-                get("/readyz").to(() -> req -> new HttpResponse().setStatus(HTTP_NO_CONTENT))),
-                null);
-	}
-	
-	private static HttpResponse getPageFromResource(final String resource) {
-		return new HttpResponse().setContent(Contents.utf8String(_getFileContent(resource)));
-	}
-	
-	public static String testPage(final TestPage page) {
-		try {
-			return server.getUrl().toURI().resolve(page.path).toString();
-		} catch (URISyntaxException e) {
-			throw new AssertionError("Failed getting test page web server URI", e);
-		}
-	}
+    
+    public static String testPage(final TestPage page) {
+        try {
+            return ServerHolder.INSTANCE.getUrl().toURI().resolve(page.path).toString();
+        } catch (URISyntaxException e) {
+            throw new AssertionError("Failed getting test page web server URI", e);
+        }
+    }
 
     /**
      * Closes the drivers.
@@ -155,7 +164,6 @@ public abstract class WebDriverTestCase extends WebTestCase {
             driver.quit();
         }
         WEB_DRIVERS_.clear();
-		server.stop();
     }
 
     /**
