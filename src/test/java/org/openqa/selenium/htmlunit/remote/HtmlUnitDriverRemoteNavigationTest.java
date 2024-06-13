@@ -74,7 +74,7 @@ public class HtmlUnitDriverRemoteNavigationTest extends RemoteWebDriverTestCase 
     
     @Test
     public void shouldBeAbleToGetPageTitle() throws Exception {
-    	getWebDriver().get(testPage(SIMPLE));
+        getWebDriver().get(testPage(SIMPLE));
         HttpResponse response = server.getTitle(sessionId);
         assertEquals("Failed getting page title", HTTP_OK, response.getStatus());
         assertEquals("Page title", "page title", extractString(response));

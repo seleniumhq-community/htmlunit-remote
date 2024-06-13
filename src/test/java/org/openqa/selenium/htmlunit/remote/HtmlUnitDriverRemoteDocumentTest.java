@@ -43,7 +43,7 @@ import org.xml.sax.SAXException;
 public class HtmlUnitDriverRemoteDocumentTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToGetPageSource() throws Exception {
-    	getWebDriver().get(testPage(SIMPLE));
+        getWebDriver().get(testPage(SIMPLE));
         HttpResponse response = server.getPageSource(sessionId);
         assertEquals("Failed getting page source", HTTP_OK, response.getStatus());
         verifyXmlEquals("Page source", getFileContent("SimplePage.html"), extractString(response));
@@ -51,7 +51,7 @@ public class HtmlUnitDriverRemoteDocumentTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToExecuteScript() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         final String selector = "input#checkbox";
         CommandPayload payload = DriverCommand.EXECUTE_SCRIPT("return document.querySelector(arguments[0]);", List.of(selector));
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
@@ -63,7 +63,7 @@ public class HtmlUnitDriverRemoteDocumentTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToExecuteAsyncScript() throws Exception {
-    	getWebDriver().get(testPage(HOME));
+        getWebDriver().get(testPage(HOME));
         final String selector = "input#checkbox";
         CommandPayload payload = DriverCommand.EXECUTE_SCRIPT("arguments[1](document.querySelector(arguments[0]));", List.of(selector));
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
