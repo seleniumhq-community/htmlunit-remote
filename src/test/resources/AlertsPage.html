@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Testing Alerts</title>
+  </head>
+  <script type='text/javascript'>
+    function setInnerText(id, value) {
+      document.getElementById(id).innerHTML = '<p>' + value + '</p>';
+    }
+    function displayPrompt() {
+      setInnerText('text', prompt('Enter something', 'default'));
+    }
+  </script>
+  <body>
+    <a href='#' id='alert-to-dismiss' onclick='alert("Dismiss this alert!");'>click me</a>
+    <a href='#' id='alert-to-accept' onclick='alert("Accept this alert!");'>click me</a>
+    <a href='#' id='alert-to-scrape' onclick='alert("Scrape this alert!");'>click me</a>
+    <a href='#' id='prompt' onclick='displayPrompt();'>click me</a>
+    <div id='text'>acceptor</div>
+  </body>
+</html>

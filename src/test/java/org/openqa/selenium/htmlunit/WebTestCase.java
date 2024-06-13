@@ -18,8 +18,6 @@
 package org.openqa.selenium.htmlunit;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -140,8 +138,6 @@ public abstract class WebTestCase {
      */
     public static final String PROPERTY_GENERATE_TESTPAGES =
             "org.htmlunit.WebTestCase.GenerateTestpages";
-
-    private BrowserVersion browserVersion_;
 
     private String[] expectedAlerts_;
     private MockWebConnection mockWebConnection_;
@@ -587,27 +583,6 @@ public abstract class WebTestCase {
     }
 
     /**
-     * Sets the browser version.
-     *
-     * @param browserVersion the browser version
-     */
-    public void setBrowserVersion(final BrowserVersion browserVersion) {
-        browserVersion_ = browserVersion;
-    }
-
-    /**
-     * Returns the current {@link BrowserVersion}.
-     *
-     * @return current {@link BrowserVersion}
-     */
-    protected final BrowserVersion getBrowserVersion() {
-        if (browserVersion_ == null) {
-            throw new IllegalStateException("You must annotate the test class with '@RunWith(BrowserRunner.class)'");
-        }
-        return browserVersion_;
-    }
-
-    /**
      * Sets the expected alerts.
      *
      * @param expectedAlerts the expected alerts
@@ -687,14 +662,9 @@ public abstract class WebTestCase {
             final String suffix;
             BrowserVersion browser = generateTest_browserVersion_.get();
             if (browser == null) {
-                browser = getBrowserVersion();
+                browser = BrowserVersion.BEST_SUPPORTED;
             }
-            if (browser == FLAG_ALL_BROWSERS) {
-                suffix = ".expected";
-            }
-            else {
-                suffix = "." + browser.getNickname() + ".expected";
-            }
+            suffix = "." + browser.getNickname() + ".expected";
 
             final File expectedLog = new File(outFile.getParentFile(), outFile.getName() + suffix);
 
@@ -743,48 +713,6 @@ public abstract class WebTestCase {
     public void releaseResources() {
         mockWebConnection_ = null;
     }
-
-    /**
-     * Loads an expectation file for the specified browser search first for a
-     * browser specific resource and falling back in a general resource.
-     *
-     * @param resourcePrefix the start of the resource name
-     * @param resourceSuffix the end of the resource name
-     * @return the content of the file
-     * @throws Exception in case of error
-     */
-    protected String loadExpectation(final String resourcePrefix, final String resourceSuffix) throws Exception {
-        final URL url = getExpectationsResource(getClass(), getBrowserVersion(), resourcePrefix, resourceSuffix);
-        assertNotNull(url);
-        final File file = new File(url.toURI());
-
-        String content = FileUtils.readFileToString(file, UTF_8);
-        content = StringUtils.replace(content, "\r\n", "\n");
-        return content;
-    }
-
-    private static URL getExpectationsResource(final Class<?> referenceClass, final BrowserVersion browserVersion,
-            final String resourcePrefix, final String resourceSuffix) {
-        final String browserSpecificResource = resourcePrefix + "." + browserVersion.getNickname() + resourceSuffix;
-
-        URL url = referenceClass.getResource(browserSpecificResource);
-        if (url != null) {
-            return url;
-        }
-
-        final String browserFamily = browserVersion.getNickname().replaceAll("[\\d\\.]", "");
-        final String browserFamilyResource = resourcePrefix + "." + browserFamily + resourceSuffix;
-
-        url = referenceClass.getResource(browserFamilyResource);
-        if (url != null) {
-            return url;
-        }
-
-        // fall back: expectations for all browsers
-        final String resource = resourcePrefix + resourceSuffix;
-        return referenceClass.getResource(resource);
-    }
-
     /**
      * Gets the active JavaScript threads.
      *
@@ -811,9 +739,20 @@ public abstract class WebTestCase {
      * @throws IOException in case of error
      */
     protected String getFileContent(final String fileName) throws IOException {
-        final InputStream stream = getClass().getClassLoader().getResourceAsStream(fileName);
+    	return getFileContent(getClass().getClassLoader(), fileName);
+    }
+    
+    protected static String _getFileContent(final String fileName) {
+    	try {
+			return getFileContent(Thread.currentThread().getContextClassLoader(), fileName);
+		} catch (IOException e) {
+			return "";
+		}
+    }
+    
+    protected static String getFileContent(final ClassLoader classLoader, final String fileName) throws IOException {
+        final InputStream stream = classLoader.getResourceAsStream(fileName);
         assertNotNull(fileName, stream);
         return IOUtils.toString(stream, ISO_8859_1);
     }
-
 }

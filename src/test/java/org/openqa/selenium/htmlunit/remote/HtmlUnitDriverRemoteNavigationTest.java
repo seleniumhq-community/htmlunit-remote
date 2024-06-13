@@ -19,6 +19,7 @@ package org.openqa.selenium.htmlunit.remote;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.Assert.fail;
+import static org.openqa.selenium.htmlunit.WebDriverTestCase.TestPage.SIMPLE;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -73,7 +74,7 @@ public class HtmlUnitDriverRemoteNavigationTest extends RemoteWebDriverTestCase 
     
     @Test
     public void shouldBeAbleToGetPageTitle() throws Exception {
-        loadPage2("<html><head><title>page title</title></head><body>plain text</body></html>");
+    	getWebDriver().get(testPage(SIMPLE));
         HttpResponse response = server.getTitle(sessionId);
         assertEquals("Failed getting page title", HTTP_OK, response.getStatus());
         assertEquals("Page title", "page title", extractString(response));

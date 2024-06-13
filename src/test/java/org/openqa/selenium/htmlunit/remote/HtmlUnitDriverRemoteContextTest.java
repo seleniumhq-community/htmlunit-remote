@@ -19,6 +19,7 @@ package org.openqa.selenium.htmlunit.remote;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.Assert.fail;
+import static org.openqa.selenium.htmlunit.WebDriverTestCase.TestPage.HOME;
 
 import java.util.HashSet;
 import java.util.List;
@@ -79,25 +80,20 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToSwitchToFrame() throws Exception {
-        final String page1 = HTMLUNIT_HOME;
-        final String page2 = SELENIUM_DEV;
-        final String frame1 = "<iframe id='id1' name='name1' title='HtmlUnit Home' src='" + page1 + "'></iframe>";
-        final String frame2 = "<iframe id='id2' name='name2' title='Selenium Dev' src='" + page2 + "'></iframe>";
+        getWebDriver().get(testPage(HOME));
+    	
+        final By main_frame1 = By.cssSelector("iframe#frame-a");
+        final By main_frame2 = By.cssSelector("iframe#frame-b");
         
-        final By main_frame1 = By.cssSelector("iframe#id1");
-        final By main_frame2 = By.cssSelector("iframe#id2");
-        final By frame1_elem = By.cssSelector("img[alt=HtmlUnit]");
-        final By frame2_elem = By.cssSelector("a.navbar-brand");
-        
-        loadPage2("<html><head><title>frames example</title></head><body><h1 id='header'>Frames Example</h1>" +
-                frame1 + frame2 + "</body></html>");
+        final By heading_a = By.cssSelector("h1#heading-a");
+        final By heading_b = By.cssSelector("h1#heading-b");
         
         // [FRAME BY INDEX]
         CommandPayload payload = DriverCommand.SWITCH_TO_FRAME(0);
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
         HttpResponse response = server.switchToFrame(request, sessionId);
         assertEquals("Failed switching to frame by index", HTTP_OK, response.getStatus());
-        verifyContextElement(frame1_elem, page1);
+        verifyContextElement(heading_a, "Frame A");
         
         // [PARENT FRAME]
         response = server.switchToParentFrame(sessionId);
@@ -105,11 +101,11 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         verifyContextElement(main_frame1, "parent frame");
         
         // [FRAME BY ID]
-        payload = DriverCommand.SWITCH_TO_FRAME("id1");
+        payload = DriverCommand.SWITCH_TO_FRAME("frame-a");
         request = commandCodec.encode(new Command(sessionId(), payload));
         response = server.switchToFrame(request, sessionId);
         assertEquals("Failed switching to frame by ID", HTTP_OK, response.getStatus());
-        verifyContextElement(frame1_elem, page1);
+        verifyContextElement(heading_a, "Frame A");
         
         // [DEFAULT CONTENT] (id = null)
         payload = DriverCommand.SWITCH_TO_FRAME(null);
@@ -119,11 +115,11 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         verifyContextElement(main_frame1, "default content");
         
         // [FRAME BY NAME]
-        payload = DriverCommand.SWITCH_TO_FRAME("name2");
+        payload = DriverCommand.SWITCH_TO_FRAME("name-b");
         request = commandCodec.encode(new Command(sessionId(), payload));
         response = server.switchToFrame(request, sessionId);
         assertEquals("Failed switching to frame by name", HTTP_OK, response.getStatus());
-        verifyContextElement(frame2_elem, page2);
+        verifyContextElement(heading_b, "Frame B");
         
         // [PARENT FRAME]
         response = server.switchToParentFrame(sessionId);
@@ -135,7 +131,7 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         request = commandCodec.encode(new Command(sessionId(), payload));
         response = server.switchToFrame(request, sessionId);
         assertEquals("Failed switching to frame by element", HTTP_OK, response.getStatus());
-        verifyContextElement(frame2_elem, page2);
+        verifyContextElement(heading_b, "Frame B");
         
         // [DEFAULT CONTENT] (id = null)
         payload = DriverCommand.SWITCH_TO_FRAME(null);

@@ -18,13 +18,13 @@
 package org.openqa.selenium.htmlunit.remote;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.openqa.selenium.htmlunit.WebDriverTestCase.TestPage.ALERTS;
 import static org.openqa.selenium.support.ui.ExpectedConditions.alertIsPresent;
 import java.time.Duration;
 import org.junit.After;
 import org.junit.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.PageUtility;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.remote.Command;
 import org.openqa.selenium.remote.CommandPayload;
@@ -45,8 +45,8 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
 
     @Test
     public void shouldBeAbleToDismissAlert() throws Exception {
-        loadAlertPage("Testing Alerts", "Dismiss this alert!");
-        getWebDriver().findElement(By.id("alert")).click();
+    	getWebDriver().get(testPage(ALERTS));
+        getWebDriver().findElement(By.id("alert-to-dismiss")).click();
         getWait().until(alertIsPresent());
         HttpResponse response = server.dismissAlert(sessionId);
         assertEquals("Failed dismissing alert", HTTP_OK, response.getStatus());
@@ -57,8 +57,8 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToAcceptAlert() throws Exception {
-        loadAlertPage("Testing Alerts", "Accept this alert!");
-        getWebDriver().findElement(By.id("alert")).click();
+    	getWebDriver().get(testPage(ALERTS));
+        getWebDriver().findElement(By.id("alert-to-accept")).click();
         getWait().until(alertIsPresent());
         HttpResponse response = server.acceptAlert(sessionId);
         assertEquals("Failed accepting alert", HTTP_OK, response.getStatus());
@@ -69,8 +69,8 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToGetAlertText() throws Exception {
-        loadAlertPage("Testing Alerts", "Scrape this alert!");
-        getWebDriver().findElement(By.id("alert")).click();
+    	getWebDriver().get(testPage(ALERTS));
+        getWebDriver().findElement(By.id("alert-to-scrape")).click();
         Alert alert = getWait().until(alertIsPresent());
         HttpResponse response = server.getAlertText(sessionId);
         assertEquals("Failed getting alert text", HTTP_OK, response.getStatus());
@@ -83,7 +83,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToSendAlertText() throws Exception {
-        loadPromptPage("Testing Prompt", "default");
+    	getWebDriver().get(testPage(ALERTS));
         getWebDriver().findElement(By.id("prompt")).click();
         Alert alert = getWait().until(alertIsPresent());
         CommandPayload payload = DriverCommand.SET_ALERT_VALUE("success");
@@ -93,24 +93,6 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
         alert.accept();
         
         getWait().until(textInElementLocated(By.id("text"), "success"));
-    }
-    
-    private void loadAlertPage(final String title, final String alertText) throws Exception {
-        String pageTemplate = PageUtility.getResource("PageTemplate.html");
-        String alertTemplate = PageUtility.getResource("AlertTemplate");
-        String pageBody = alertTemplate.replaceFirst("<!--alert-->", alertText);
-        loadPage2(pageTemplate.replaceFirst("<!--title-->", title).replaceFirst("<!--body-->", pageBody));
-    }
-    
-    private void loadPromptPage(final String title, final String defaultText) throws Exception {
-        String pageTemplate = PageUtility.getResource("PageTemplate.html");
-        String alertScript = PageUtility.getResource("AlertScript");
-        String promptScript = defaultText == null ? PageUtility.getResource("DefaultPrompt") 
-                : PageUtility.getResource("PromptTemplate").replaceFirst("<!--defaultText-->", defaultText);
-        String promptBody = PageUtility.getResource("PromptBody");
-        loadPage2(pageTemplate.replaceFirst("<!--title-->", title)
-                .replaceFirst("<!--scripts-->", alertScript + promptScript)
-                .replaceFirst("<!--body-->", promptBody));
     }
     
     private WebDriverWait getWait() {

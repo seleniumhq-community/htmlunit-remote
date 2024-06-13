@@ -18,6 +18,8 @@
 package org.openqa.selenium.htmlunit.remote;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.openqa.selenium.htmlunit.WebDriverTestCase.TestPage.HOME;
+import static org.openqa.selenium.htmlunit.WebDriverTestCase.TestPage.SIMPLE;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,7 +31,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.PageUtility;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.Command;
 import org.openqa.selenium.remote.CommandPayload;
@@ -42,17 +43,16 @@ import org.xml.sax.SAXException;
 public class HtmlUnitDriverRemoteDocumentTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToGetPageSource() throws Exception {
-        final String html = "<html><head><title>page title</title></head><body>plain text</body></html>";
-        loadPage2(html);
+    	getWebDriver().get(testPage(SIMPLE));
         HttpResponse response = server.getPageSource(sessionId);
         assertEquals("Failed getting page source", HTTP_OK, response.getStatus());
-        verifyXmlEquals("Page source", html, extractString(response));
+        verifyXmlEquals("Page source", getFileContent("SimplePage.html"), extractString(response));
     }
     
     @Test
     public void shouldBeAbleToExecuteScript() throws Exception {
+    	getWebDriver().get(testPage(HOME));
         final String selector = "input#checkbox";
-        loadPage2(PageUtility.getResource("ExamplePage.html"));
         CommandPayload payload = DriverCommand.EXECUTE_SCRIPT("return document.querySelector(arguments[0]);", List.of(selector));
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
         HttpResponse response = server.executeScript(request, sessionId, false);
@@ -63,8 +63,8 @@ public class HtmlUnitDriverRemoteDocumentTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToExecuteAsyncScript() throws Exception {
+    	getWebDriver().get(testPage(HOME));
         final String selector = "input#checkbox";
-        loadPage2(PageUtility.getResource("ExamplePage.html"));
         CommandPayload payload = DriverCommand.EXECUTE_SCRIPT("arguments[1](document.querySelector(arguments[0]));", List.of(selector));
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
         HttpResponse response = server.executeScript(request, sessionId, true);
