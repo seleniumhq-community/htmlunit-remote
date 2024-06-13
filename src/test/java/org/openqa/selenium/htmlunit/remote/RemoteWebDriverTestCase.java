@@ -44,7 +44,6 @@ import org.openqa.selenium.remote.http.HttpResponse;
 
 public class RemoteWebDriverTestCase extends WebDriverTestCase {
     protected static final CommandCodec<HttpRequest> commandCodec;
-    protected static final String SELENIUM_DEV = "https://www.selenium.dev/";
     protected static final String HTMLUNIT_HOME = "https://www.htmlunit.org/";
     protected static final String HTMLUNIT_HISTORY = "https://www.htmlunit.org/history.html";
     

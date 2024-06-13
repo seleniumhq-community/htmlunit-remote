@@ -1,1 +1,0 @@
-function displayPrompt() { setInnerText('text', prompt('Enter something', '<!--defaultText-->')); }

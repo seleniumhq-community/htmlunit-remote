@@ -1,1 +1,0 @@
-<a href='#' id='prompt' onclick='displayPrompt();'>click me</a><div id='text'>acceptor</div>
