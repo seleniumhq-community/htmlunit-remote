@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.function.Supplier;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlunit.BrowserVersion;
@@ -37,10 +34,6 @@ import org.htmlunit.WebClient;
 import org.htmlunit.WebClientOptions;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.ComparisonFailure;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.UnhandledAlertException;
@@ -65,10 +58,6 @@ public abstract class WebDriverTestCase extends WebTestCase {
     protected static final Map<BrowserVersion, WebDriver> WEB_DRIVERS_ = new HashMap<>();
     private static final Executor EXECUTOR_POOL = Executors.newFixedThreadPool(4);
 
-    /** Timeout used when waiting for successful bind. */
-    public static final int BIND_TIMEOUT = 1000;
-    
-    
     private static class ServerHolder {
         private static Server<?> INSTANCE;
         
@@ -101,6 +90,10 @@ public abstract class WebDriverTestCase extends WebTestCase {
         private static HttpResponse getPageFromResource(final String resource) {
             return new HttpResponse().setContent(Contents.utf8String(_getFileContent(resource)));
         }
+
+    	private static BaseServerOptions defaultOptions() {
+    		return new BaseServerOptions(new MapConfig(Map.of("server", Map.of("port", PortProber.findFreePort()))));
+    	}
     }
     
     public enum TestPage {
@@ -206,158 +199,6 @@ public abstract class WebDriverTestCase extends WebTestCase {
         return browserVersion.getNickname();
     }
 
-    protected void resizeIfNeeded(final WebDriver driver) {
-        final Dimension size = driver.manage().window().getSize();
-        if (size.getWidth() != 1272 || size.getHeight() != 768) {
-            // only resize if needed because it may be quite expensive
-            driver.manage().window().setSize(new Dimension(1272, 768));
-        }
-    }
-
-    /**
-     * Verifies the captured alerts.
-     * @param func actual string producer
-     * @param expected the expected string
-     * @throws Exception in case of failure
-     */
-    protected void verifyAlerts(final Supplier<String> func, final String expected) throws Exception {
-        verifyAlerts(func, expected, DEFAULT_WAIT_TIME);
-    }
-
-    /**
-     * Verifies the captured alerts.
-     * @param func actual string producer
-     * @param expected the expected string
-     * @param maxWaitTime the maximum time to wait to get the alerts (in millis)
-     * @throws Exception in case of failure
-     */
-    protected void verifyAlerts(final Supplier<String> func, final String expected,
-            final long maxWaitTime) throws Exception {
-        final long maxWait = System.currentTimeMillis() + maxWaitTime;
-
-        String actual = null;
-        while (System.currentTimeMillis() < maxWait) {
-            actual = func.get();
-
-            if (StringUtils.equals(expected, actual)) {
-                break;
-            }
-
-            Thread.sleep(50);
-        }
-
-        assertEquals(expected, actual);
-    }
-
-    /**
-     * Verifies the captured alerts.
-     * @param driver the driver instance
-     * @param expectedAlerts the expected alerts
-     * @throws Exception in case of failure
-     */
-    protected void verifyAlerts(final WebDriver driver, final String... expectedAlerts) throws Exception {
-        verifyAlerts(DEFAULT_WAIT_TIME, driver, expectedAlerts);
-    }
-
-    /**
-     * Verifies the captured alerts.
-     *
-     * @param maxWaitTime the maximum time to wait for the expected alert to be found
-     * @param driver the driver instance
-     * @param expectedAlerts the expected alerts
-     * @throws Exception in case of failure
-     */
-    protected void verifyAlerts(final long maxWaitTime, final WebDriver driver, final String... expectedAlerts)
-            throws Exception {
-        final List<String> actualAlerts = getCollectedAlerts(maxWaitTime, driver, expectedAlerts.length);
-
-        assertEquals(expectedAlerts.length, actualAlerts.size());
-        assertEquals(expectedAlerts, actualAlerts);
-    }
-
-    /**
-     * Gets the alerts collected by the driver.
-     * Note: it currently works only if no new page has been loaded in the window
-     * @param driver the driver
-     * @return the collected alerts
-     * @throws Exception in case of problem
-     */
-    protected List<String> getCollectedAlerts(final WebDriver driver) throws Exception {
-        return getCollectedAlerts(driver, getExpectedAlerts().length);
-    }
-
-    /**
-     * Gets the alerts collected by the driver.
-     * Note: it currently works only if no new page has been loaded in the window
-     * @param driver the driver
-     * @param alertsLength the expected length of Alerts
-     * @return the collected alerts
-     * @throws Exception in case of problem
-     */
-    protected List<String> getCollectedAlerts(final WebDriver driver, final int alertsLength) throws Exception {
-        return getCollectedAlerts(DEFAULT_WAIT_TIME, driver, alertsLength);
-    }
-
-    /**
-     * Gets the alerts collected by the driver.
-     * Note: it currently works only if no new page has been loaded in the window
-     * @param maxWaitTime the maximum time to wait to get the alerts (in millis)
-     * @param driver the driver
-     * @param alertsLength the expected length of Alerts
-     * @return the collected alerts
-     * @throws Exception in case of problem
-     */
-    protected List<String> getCollectedAlerts(final long maxWaitTime, final WebDriver driver, final int alertsLength)
-            throws Exception {
-        final List<String> collectedAlerts = new ArrayList<>();
-
-        long maxWait = System.currentTimeMillis() + maxWaitTime;
-
-        while (collectedAlerts.size() < alertsLength && System.currentTimeMillis() < maxWait) {
-            try {
-                final Alert alert = driver.switchTo().alert();
-                final String text = alert.getText();
-
-                collectedAlerts.add(text);
-                alert.accept();
-
-                // handling of alerts requires some time
-                // at least for tests with many alerts we have to take this into account
-                maxWait += 100;
-            }
-            catch (final NoAlertPresentException e) {
-                Thread.sleep(10);
-            }
-        }
-
-        return collectedAlerts;
-    }
-
-    /**
-     * Asserts the current title is equal to the expectation string.
-     * @param webdriver the driver in use
-     * @param expected the expected object
-     * @throws Exception in case of failure
-     */
-    protected void assertTitle(final WebDriver webdriver, final String expected) throws Exception {
-        final long maxWait = System.currentTimeMillis() + DEFAULT_WAIT_TIME;
-
-        while (true) {
-            final String title = webdriver.getTitle();
-            try {
-                assertEquals(expected, title);
-                return;
-            }
-            catch (final ComparisonFailure e) {
-                if (expected.length() <= title.length()
-                        || System.currentTimeMillis() > maxWait) {
-                    throw e;
-                }
-                Thread.sleep(10);
-            }
-        }
-    }
-
     /**
      * Release resources but DON'T close the browser if we are running with a real browser.
      * Note that HtmlUnitDriver is not cached by default, but that can be configured by {@link #isWebClientCached()}.
@@ -413,10 +254,4 @@ public abstract class WebDriverTestCase extends WebTestCase {
     protected Integer getWebClientTimeout() {
         return null;
     }
-    
-    private static BaseServerOptions defaultOptions() {
-        return new BaseServerOptions(
-            new MapConfig(
-                Map.of("server", Map.of("port", PortProber.findFreePort()))));
-      }
 }
