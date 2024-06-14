@@ -40,14 +40,14 @@ public class HtmlUnitDriverRemoteActionsTest extends RemoteWebDriverTestCase {
                 .sendKeys("abc");
         CommandPayload payload = DriverCommand.ACTIONS(actions.getSequences());
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.performActions(request, sessionId);
+        HttpResponse response = HtmlUnitDriverServer.performActions(request, sessionId);
         assertEquals("Failed performing actions", HTTP_OK, response.getStatus());
         assertEquals("Target field value mismatch", "abc", clickable.getAttribute("value"));
     }
 
     @Test
     public void shouldBeAbleToReleaseActions() {
-        HttpResponse response = server.releaseActions(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.releaseActions(sessionId);
         assertEquals("Failed releasing actions", HTTP_OK, response.getStatus());
     }
 }

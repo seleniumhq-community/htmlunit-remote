@@ -18,30 +18,42 @@
 package org.openqa.selenium.htmlunit.remote;
 
 import static org.openqa.selenium.remote.Browser.HTMLUNIT;
-import static org.openqa.selenium.htmlunit.remote.HtmlUnitDriverServer.DRIVER_BINARY_ROLE;
-
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.grid.Bootstrap;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.openqa.selenium.htmlunit.options.BrowserVersionTrait;
+import org.openqa.selenium.grid.config.MapConfig;
+import org.openqa.selenium.grid.server.BaseServerOptions;
+import org.openqa.selenium.grid.server.Server;
 import org.openqa.selenium.htmlunit.options.HtmlUnitDriverOptions;
-import org.openqa.selenium.htmlunit.options.HtmlUnitOption;
-import org.openqa.selenium.htmlunit.options.OptionEnum;
 import org.openqa.selenium.remote.service.DriverService;
 
 import com.google.auto.service.AutoService;
-import com.nordstrom.common.file.PathUtils;
-import com.nordstrom.common.jar.JarUtils;
 
 public class HtmlUnitDriverService extends DriverService {
     
+    private volatile Server<?> sessionServer;
+    public Server<?> getServer() {
+        Server<?> localRef = sessionServer;
+        if (localRef == null) {
+            synchronized (HtmlUnitDriverService.class) {
+                localRef = sessionServer;
+                if (localRef == null) {                    
+                    sessionServer = localRef = new HtmlUnitDriverServer(getOptions());
+                }
+            }
+        }
+        return localRef;
+    }
+    
+    private BaseServerOptions getOptions() {
+        return new BaseServerOptions(new MapConfig(Map.of("server", Map.of("port", getUrl().getPort()))));
+    }
+        
     protected HtmlUnitDriverService(final File executable, final int port, final Duration timeout,
             final List<String> args, final Map<String, String> environment) throws IOException {
         super(executable, port, timeout, args, environment);
@@ -69,84 +81,57 @@ public class HtmlUnitDriverService extends DriverService {
     
     @Override
     public String getExecutable() {
-        // if no executable is spec'd
-        if (super.getExecutable() == null) {
-            // specify current Java installation as executable
-            String javaPath = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-            setExecutable(PathUtils.findExecutableOnSystemPath(javaPath));
-        }
+        // specify current Java installation as executable
+        setExecutable(ProcessHandle.current().info().command().get());
         return super.getExecutable();
     }
     
     @Override
+    public boolean isRunning() {
+        synchronized (HtmlUnitDriverService.class) {
+            Server<?> localRef = getServer();
+            return localRef != null && localRef.isStarted();
+        }
+    }
+    
+    @Override
     public void start() throws IOException {
-        getArgs().add("--port");
-        getArgs().add(Integer.toString(getUrl().getPort()));
-        super.start();
+        synchronized (HtmlUnitDriverService.class) {
+            if (isRunning()) return;
+            getServer().start();
+        }
+    }
+    
+    @Override
+    public void stop() {
+    }
+    
+    @Override
+    public void close() {
+        synchronized (HtmlUnitDriverService.class) {
+            if (isRunning()) {
+                getServer().stop();
+                sessionServer = null;
+            }
+        }
+        if (getOutputStream() instanceof FileOutputStream) {
+            try {
+                getOutputStream().close();
+            } catch (IOException ignore) {
+            }
+        }
+        super.close();
     }
     
     @AutoService(DriverService.Builder.class)
     public static class Builder extends DriverService.Builder<HtmlUnitDriverService, HtmlUnitDriverService.Builder> {
         
-        private static final String[] DEPENDENCY_CONTEXTS = { "ch.qos.logback.core.Layout",
-                "com.beust.jcommander.Strings", "com.google.common.base.Utf8", "com.nordstrom.common.jar.JarUtils",
-                "dev.failsafe.Call", "graphql.Assert", "io.netty.buffer.ByteBuf", "io.netty.channel.Channel",
-                "io.netty.handler.codec.Headers", "io.netty.handler.codec.http.Cookie", "io.netty.handler.ssl.SslUtils",
-                "io.netty.resolver.NameResolver", "io.netty.util.Timer",
-                "io.opentelemetry.api.incubator.events.EventLoggerProvider", "io.opentelemetry.api.logs.Logger",
-                "io.opentelemetry.api.trace.Span", "io.opentelemetry.context.Scope",
-                "io.opentelemetry.sdk.autoconfigure.ResourceConfiguration",
-                "io.opentelemetry.sdk.autoconfigure.spi.Ordered", "io.opentelemetry.sdk.common.Clock",
-                "io.opentelemetry.sdk.logs.LogLimits", "io.opentelemetry.sdk.metrics.View",
-                "io.opentelemetry.sdk.OpenTelemetrySdk", "io.opentelemetry.sdk.trace.SdkSpan",
-                "io.opentelemetry.semconv.SemanticAttributes", "javax.servlet.http.HttpServletResponse",
-                "net.bytebuddy.matcher.ElementMatcher", "org.apache.commons.codec.Encoder",
-                "org.apache.commons.exec.Executor", "org.apache.commons.io.IOUtils", "org.apache.commons.lang3.CharSet",
-                "org.apache.commons.logging.Log", "org.apache.commons.net.io.Util", "org.apache.commons.text.WordUtils",
-                "org.apache.http.client.HttpClient", "org.apache.http.entity.mime.content.ContentBody",
-                "org.apache.http.entity.mime.MIME", "org.apache.http.HttpHost", "org.brotli.dec.Utils",
-                "org.dataloader.DataLoader", "org.eclipse.jetty.http.Syntax", "org.eclipse.jetty.io.EndPoint",
-                "org.eclipse.jetty.server.Server", "org.eclipse.jetty.util.IO", "org.htmlunit.corejs.javascript.Symbol",
-                "org.htmlunit.cssparser.parser.CSSErrorHandler", "org.htmlunit.cyberneko.xerces.xni.XNIException",
-                "org.htmlunit.jetty.client.Origin", "org.htmlunit.jetty.websocket.api.Session", "org.htmlunit.Version",
-                "org.htmlunit.xpath.xml.utils.PrefixResolver", "org.openqa.selenium.By",
-                "org.openqa.selenium.grid.Main", "org.openqa.selenium.htmlunit.HtmlUnitDriver",
-                "org.openqa.selenium.io.Zip", "org.openqa.selenium.json.Json", "org.openqa.selenium.Keys",
-                "org.openqa.selenium.manager.SeleniumManager", "org.openqa.selenium.net.Urls",
-                "org.openqa.selenium.remote.http.Route", "org.openqa.selenium.remote.tracing.Tracer",
-                "org.openqa.selenium.support.FindBy", "org.reactivestreams.Publisher", "org.slf4j.MDC",
-                "org.slf4j.impl.StaticLoggerBinder", "org.zeromq.Utils" };
-
-        private Boolean driverDebug;
-        
-        public Builder() {
-            driverDebug = Boolean.getBoolean(HtmlUnitOption.DRIVER_DEBUG.name);
-        }
-
         @Override
         public int score(final Capabilities capabilities) {
             int score = 0;
-
-            if (HTMLUNIT.is(capabilities.getBrowserName())) {
-                score++;
-            }
-
-            if (capabilities.getCapability(HtmlUnitDriverOptions.HTMLUNIT_OPTIONS) != null) {
-                score++;
-            }
-
+            if (HTMLUNIT.is(capabilities.getBrowserName())) { score++; }
+            if (capabilities.getCapability(HtmlUnitDriverOptions.HTMLUNIT_OPTIONS) != null) { score++; }
             return score;
-        }
-
-        /**
-         * Specifies whether to launch the driver binary with JDWP debugging.
-         *
-         * @param driverDebug whether to enable JDWP debugging
-         * @return A self reference.
-         */
-        public Builder withDriverDebug(final Boolean driverDebug) {
-          this.driverDebug = driverDebug;
-          return this;
         }
 
         @Override
@@ -155,26 +140,7 @@ public class HtmlUnitDriverService extends DriverService {
 
         @Override
         protected List<String> createArgs() {
-            List<String> args = new ArrayList<>();
-            
-            List<String> contextPaths = JarUtils.getContextPaths(DEPENDENCY_CONTEXTS);
-            String classPath = contextPaths.remove(0);
-            
-            args.add("-cp");
-            args.add(classPath);
-            
-            if (driverDebug) {
-                args.add(0, "-agentlib:jdwp=transport=dt_socket,server=y,address=8000");
-            }
-            
-            addOptionProperties(args, HtmlUnitOption.values());
-            addOptionProperties(args, BrowserVersionTrait.values());
-            args.add(Bootstrap.class.getName());
-            args.add("--ext");
-            args.add(JarUtils.findJarPathFor(HtmlUnitDriver.class.getName()));
-            args.add(DRIVER_BINARY_ROLE.getRoleName());
-            
-            return args;
+            return List.of();
         }
 
         @Override
@@ -184,16 +150,6 @@ public class HtmlUnitDriverService extends DriverService {
                 return new HtmlUnitDriverService(exe, port, timeout, args, environment);
             } catch (IOException e) {
                 throw new WebDriverException(e);
-            }
-        }
-        
-        private static <T extends OptionEnum> void addOptionProperties(final List<String> args, final T[] options) {
-            for (OptionEnum option : options) {
-                String name = option.getPropertyName();
-                String value = System.getProperty(name);
-                if (value != null) {
-                    args.add(0, "-D" + name + "=" + value);
-                }
             }
         }
     }

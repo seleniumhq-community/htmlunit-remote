@@ -44,7 +44,7 @@ public class HtmlUnitDriverRemoteDocumentTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToGetPageSource() throws Exception {
         getWebDriver().get(testPage(SIMPLE));
-        HttpResponse response = server.getPageSource(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.getPageSource(sessionId);
         assertEquals("Failed getting page source", HTTP_OK, response.getStatus());
         verifyXmlEquals("Page source", getFileContent("SimplePage.html"), extractString(response));
     }
@@ -55,7 +55,7 @@ public class HtmlUnitDriverRemoteDocumentTest extends RemoteWebDriverTestCase {
         final String selector = "input#checkbox";
         CommandPayload payload = DriverCommand.EXECUTE_SCRIPT("return document.querySelector(arguments[0]);", List.of(selector));
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.executeScript(request, sessionId, false);
+        HttpResponse response = HtmlUnitDriverServer.executeScript(request, sessionId, false);
         assertEquals("Failed executing string", HTTP_OK, response.getStatus());
         WebElement element = (WebElement) toElement(extractMap(response));
         assertEquals("Script result mismatch", getWebDriver().findElement(By.cssSelector(selector)), element);
@@ -67,7 +67,7 @@ public class HtmlUnitDriverRemoteDocumentTest extends RemoteWebDriverTestCase {
         final String selector = "input#checkbox";
         CommandPayload payload = DriverCommand.EXECUTE_SCRIPT("arguments[1](document.querySelector(arguments[0]));", List.of(selector));
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.executeScript(request, sessionId, true);
+        HttpResponse response = HtmlUnitDriverServer.executeScript(request, sessionId, true);
         assertEquals("Failed executing string", HTTP_OK, response.getStatus());
         WebElement element = (WebElement) toElement(extractMap(response));
         assertEquals("Script result mismatch", getWebDriver().findElement(By.cssSelector(selector)), element);

@@ -30,7 +30,7 @@ public class HtmlUnitDriverRemoteSessionTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToDeleteSession() {
-        HttpResponse response = server.deleteSession(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.deleteSession(sessionId);
         assertEquals("Failed deleting session", HTTP_OK, response.getStatus());
     }
 }

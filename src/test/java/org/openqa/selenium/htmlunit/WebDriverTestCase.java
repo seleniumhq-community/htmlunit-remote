@@ -59,7 +59,7 @@ public abstract class WebDriverTestCase extends WebTestCase {
     private static final Executor EXECUTOR_POOL = Executors.newFixedThreadPool(4);
 
     private static class ServerHolder {
-        private static Server<?> INSTANCE;
+        private static final Server<?> INSTANCE;
         
         static {
             INSTANCE = new NettyServer(defaultOptions(), createHandlers().httpHandler);
@@ -91,9 +91,9 @@ public abstract class WebDriverTestCase extends WebTestCase {
             return new HttpResponse().setContent(Contents.utf8String(_getFileContent(resource)));
         }
 
-    	private static BaseServerOptions defaultOptions() {
-    		return new BaseServerOptions(new MapConfig(Map.of("server", Map.of("port", PortProber.findFreePort()))));
-    	}
+        private static BaseServerOptions defaultOptions() {
+            return new BaseServerOptions(new MapConfig(Map.of("server", Map.of("port", PortProber.findFreePort()))));
+        }
     }
     
     public enum TestPage {

@@ -48,7 +48,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
         getWebDriver().get(testPage(ALERTS));
         getWebDriver().findElement(By.id("alert-to-dismiss")).click();
         getWait().until(alertIsPresent());
-        HttpResponse response = server.dismissAlert(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.dismissAlert(sessionId);
         assertEquals("Failed dismissing alert", HTTP_OK, response.getStatus());
         
         // If we can perform any action, we're good to go
@@ -60,7 +60,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
         getWebDriver().get(testPage(ALERTS));
         getWebDriver().findElement(By.id("alert-to-accept")).click();
         getWait().until(alertIsPresent());
-        HttpResponse response = server.acceptAlert(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.acceptAlert(sessionId);
         assertEquals("Failed accepting alert", HTTP_OK, response.getStatus());
         
         // If we can perform any action, we're good to go
@@ -72,7 +72,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
         getWebDriver().get(testPage(ALERTS));
         getWebDriver().findElement(By.id("alert-to-scrape")).click();
         Alert alert = getWait().until(alertIsPresent());
-        HttpResponse response = server.getAlertText(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.getAlertText(sessionId);
         assertEquals("Failed getting alert text", HTTP_OK, response.getStatus());
         assertEquals("Scrape this alert!", extractString(response));
         alert.dismiss();
@@ -88,7 +88,7 @@ public class HtmlUnitDriverRemoteAlertTest extends RemoteWebDriverTestCase {
         Alert alert = getWait().until(alertIsPresent());
         CommandPayload payload = DriverCommand.SET_ALERT_VALUE("success");
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.sendAlertText(request, sessionId);
+        HttpResponse response = HtmlUnitDriverServer.sendAlertText(request, sessionId);
         assertEquals("Failed getting alert text", HTTP_OK, response.getStatus());
         alert.accept();
         
