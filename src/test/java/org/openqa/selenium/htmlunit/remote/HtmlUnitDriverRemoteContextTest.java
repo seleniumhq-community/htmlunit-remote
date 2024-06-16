@@ -40,7 +40,7 @@ import org.openqa.selenium.remote.http.HttpResponse;
 public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToGetWindowHandle() {
-        HttpResponse response = server.getWindowHandle(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.getWindowHandle(sessionId);
         assertEquals("Failed getting window handle", HTTP_OK, response.getStatus());
         String windowHandle = extractString(response);
         assertTrue("Window handle should be integer string; was " + windowHandle, windowHandle.matches("\\d+"));
@@ -51,26 +51,26 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         String handleOne = getWebDriver().getWindowHandle();
         CommandPayload payload = DriverCommand.SWITCH_TO_NEW_WINDOW(WindowType.WINDOW);
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.switchToNewWindow(request, sessionId);
+        HttpResponse response = HtmlUnitDriverServer.switchToNewWindow(request, sessionId);
         assertEquals("Failed switching to new window", HTTP_OK, response.getStatus());
         Map<String, Object> newWindow = extractMap(response);
         assertEquals("Type of new window", "window", newWindow.get("type"));
         assertTrue("Handle of new window is not a String", newWindow.get("handle") instanceof String);
         String handleTwo = (String) newWindow.get("handle");
-        response = server.getWindowHandles(sessionId);
+        response = HtmlUnitDriverServer.getWindowHandles(sessionId);
         assertEquals("Failed getting window handles", HTTP_OK, response.getStatus());
         List<String> windowHandles = extractListOfStrings(response);
         assertEquals("Window handles after creation", Set.of(handleOne, handleTwo), new HashSet<String>(windowHandles));
         payload = DriverCommand.SWITCH_TO_WINDOW(handleOne);
         request = commandCodec.encode(new Command(sessionId(), payload));
-        response = server.switchToWindow(request, sessionId);
+        response = HtmlUnitDriverServer.switchToWindow(request, sessionId);
         assertEquals("Failed switching to initial window", HTTP_OK, response.getStatus());
         assertEquals("Window handle after switching", handleOne, getWebDriver().getWindowHandle());
-        response = server.closeWindow(sessionId);
+        response = HtmlUnitDriverServer.closeWindow(sessionId);
         assertEquals("Failed closing initial window", HTTP_OK, response.getStatus());
         windowHandles = extractListOfStrings(response);
         assertEquals("Window handles after closing initial window", List.of(handleTwo), windowHandles);
-        response = server.closeWindow(sessionId);
+        response = HtmlUnitDriverServer.closeWindow(sessionId);
         assertEquals("Failed closing second window", HTTP_OK, response.getStatus());
         windowHandles = extractListOfStrings(response);
         assertEquals("Window handles after closing second window", List.of(), windowHandles);
@@ -91,59 +91,59 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         // [FRAME BY INDEX]
         CommandPayload payload = DriverCommand.SWITCH_TO_FRAME(0);
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.switchToFrame(request, sessionId);
+        HttpResponse response = HtmlUnitDriverServer.switchToFrame(request, sessionId);
         assertEquals("Failed switching to frame by index", HTTP_OK, response.getStatus());
         verifyContextElement(heading_a, "Frame A");
         
         // [PARENT FRAME]
-        response = server.switchToParentFrame(sessionId);
+        response = HtmlUnitDriverServer.switchToParentFrame(sessionId);
         assertEquals("Failed switching to parent frame", HTTP_OK, response.getStatus());
         verifyContextElement(main_frame1, "parent frame");
         
         // [FRAME BY ID]
         payload = DriverCommand.SWITCH_TO_FRAME("frame-a");
         request = commandCodec.encode(new Command(sessionId(), payload));
-        response = server.switchToFrame(request, sessionId);
+        response = HtmlUnitDriverServer.switchToFrame(request, sessionId);
         assertEquals("Failed switching to frame by ID", HTTP_OK, response.getStatus());
         verifyContextElement(heading_a, "Frame A");
         
         // [DEFAULT CONTENT] (id = null)
         payload = DriverCommand.SWITCH_TO_FRAME(null);
         request = commandCodec.encode(new Command(sessionId(), payload));
-        response = server.switchToFrame(request, sessionId);
+        response = HtmlUnitDriverServer.switchToFrame(request, sessionId);
         assertEquals("Failed switching to default content", HTTP_OK, response.getStatus());
         verifyContextElement(main_frame1, "default content");
         
         // [FRAME BY NAME]
         payload = DriverCommand.SWITCH_TO_FRAME("name-b");
         request = commandCodec.encode(new Command(sessionId(), payload));
-        response = server.switchToFrame(request, sessionId);
+        response = HtmlUnitDriverServer.switchToFrame(request, sessionId);
         assertEquals("Failed switching to frame by name", HTTP_OK, response.getStatus());
         verifyContextElement(heading_b, "Frame B");
         
         // [PARENT FRAME]
-        response = server.switchToParentFrame(sessionId);
+        response = HtmlUnitDriverServer.switchToParentFrame(sessionId);
         assertEquals("Failed switching to parent frame", HTTP_OK, response.getStatus());
         verifyContextElement(main_frame1, "parent frame");
                 
         // [FRAME BY ELEMENT]
         payload = DriverCommand.SWITCH_TO_FRAME(getWebDriver().findElement(main_frame2));
         request = commandCodec.encode(new Command(sessionId(), payload));
-        response = server.switchToFrame(request, sessionId);
+        response = HtmlUnitDriverServer.switchToFrame(request, sessionId);
         assertEquals("Failed switching to frame by element", HTTP_OK, response.getStatus());
         verifyContextElement(heading_b, "Frame B");
         
         // [DEFAULT CONTENT] (id = null)
         payload = DriverCommand.SWITCH_TO_FRAME(null);
         request = commandCodec.encode(new Command(sessionId(), payload));
-        response = server.switchToFrame(request, sessionId);
+        response = HtmlUnitDriverServer.switchToFrame(request, sessionId);
         assertEquals("Failed switching to default content", HTTP_OK, response.getStatus());
         verifyContextElement(main_frame1, "default content");
     }
     
     @Test
     public void shouldBeAbleToGetWindowRect() {
-        HttpResponse response = server.getWindowRect(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.getWindowRect(sessionId);
         assertEquals("Failed getting window rect", HTTP_OK, response.getStatus());
         Map<String, Object> windowRect = extractMap(response);
         assertEquals("Window width", 1272L, windowRect.get("width"));
@@ -157,7 +157,7 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         CommandPayload payload = new CommandPayload(DriverCommand.SET_CURRENT_WINDOW_SIZE,
                 Map.of("width", 640, "height", 480, "x", 360, "y", 240));
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.setWindowRect(request, sessionId);
+        HttpResponse response = HtmlUnitDriverServer.setWindowRect(request, sessionId);
         assertEquals("Failed setting window rect", HTTP_OK, response.getStatus());
         Map<String, Object> windowRect = extractMap(response);
         assertEquals("Window width", 640L, windowRect.get("width"));
@@ -168,7 +168,7 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToMaximizeWindow() {
-        HttpResponse response = server.maximizeWindow(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.maximizeWindow(sessionId);
         assertEquals("Failed maximizing window", HTTP_OK, response.getStatus());
         Map<String, Object> windowRect = extractMap(response);
         assertEquals("Window width", 1272L, windowRect.get("width"));
@@ -179,7 +179,7 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
     
     @Test
     public void shouldBeAbleToFullscreenWindow() {
-        HttpResponse response = server.fullscreenWindow(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.fullscreenWindow(sessionId);
         assertEquals("Failed maximizing window", HTTP_OK, response.getStatus());
         Map<String, Object> windowRect = extractMap(response);
         assertEquals("Window width", 1272L, windowRect.get("width"));

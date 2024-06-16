@@ -49,7 +49,6 @@ public class RemoteWebDriverTestCase extends WebDriverTestCase {
     
     protected static final Type MAP_OF_OBJECTS = new TypeToken<Map<String, Object>>() {}.getType();
     
-    protected HtmlUnitDriverServer server;
     protected String sessionId;
     
     static {
@@ -58,13 +57,12 @@ public class RemoteWebDriverTestCase extends WebDriverTestCase {
 
     @Before
     public void setUp() {
-        server = new HtmlUnitDriverServer();
         sessionId = createDriverSession();
     }
     
     @Override
     protected WebDriver getWebDriver() {
-        return server.getDriverSession(sessionId);
+        return HtmlUnitDriverServer.getDriverSession(sessionId);
     }
     
     protected SessionId sessionId() {
@@ -75,7 +73,7 @@ public class RemoteWebDriverTestCase extends WebDriverTestCase {
         // permit JavaScript errors to accommodate 'selenium.dev' site
         HtmlUnitDriverOptions capabilities = new HtmlUnitDriverOptions();
         capabilities.setCapability(HtmlUnitOptionNames.optThrowExceptionOnScriptError, false);
-        HttpResponse response = server.newSession(newSessionRequest(capabilities));
+        HttpResponse response = HtmlUnitDriverServer.newSession(newSessionRequest(capabilities));
         assertEquals("Failed creating new session", HTTP_OK, response.getStatus());
         Map<String, Object> value = extractMap(response);
         Object sessionId = value.get("sessionId");

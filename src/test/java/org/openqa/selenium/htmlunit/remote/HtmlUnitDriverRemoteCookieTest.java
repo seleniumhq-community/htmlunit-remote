@@ -39,7 +39,7 @@ public class HtmlUnitDriverRemoteCookieTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToGetAllCookies() {
         setupCookies();
-        HttpResponse response = server.getAllCookies(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.getAllCookies(sessionId);
         assertEquals("Failed getting all cookies", HTTP_OK, response.getStatus());
         Set<Cookie> cookies = extractCookies(response);
         Set<Cookie> expect = Set.of(new Cookie("cookie1", "value1"),
@@ -52,7 +52,7 @@ public class HtmlUnitDriverRemoteCookieTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToGetNamedCookie() {
         setupCookies();
-        HttpResponse response = server.getNamedCookie(sessionId, "cookie2");
+        HttpResponse response = HtmlUnitDriverServer.getNamedCookie(sessionId, "cookie2");
         assertEquals("Failed getting named cookie 'cookie2'", HTTP_OK, response.getStatus());
         assertEquals("Cookie mismatch", new Cookie("cookie2", "value2"), extractCookie(response));
     }
@@ -65,7 +65,7 @@ public class HtmlUnitDriverRemoteCookieTest extends RemoteWebDriverTestCase {
                 .isHttpOnly(true).expiresOn(date).build();
         CommandPayload payload = DriverCommand.ADD_COOKIE(cookie);
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.addCookie(request, sessionId);
+        HttpResponse response = HtmlUnitDriverServer.addCookie(request, sessionId);
         assertEquals("Failed adding named cookie 'cookie4'", HTTP_OK, response.getStatus());
         assertEquals("Cookie mismatch", cookie, getWebDriver().manage().getCookieNamed("cookie4"));
     }
@@ -73,7 +73,7 @@ public class HtmlUnitDriverRemoteCookieTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToDeleteCookie() {
         setupCookies();
-        HttpResponse response = server.deleteNamedCookie(sessionId, "cookie2");
+        HttpResponse response = HtmlUnitDriverServer.deleteNamedCookie(sessionId, "cookie2");
         assertEquals("Failed deleting named cookie 'cookie2'", HTTP_OK, response.getStatus());
         Set<Cookie> cookies = getWebDriver().manage().getCookies();
         Set<Cookie> expect = Set.of(new Cookie("cookie1", "value1"), new Cookie("cookie3", "value3"));
@@ -84,7 +84,7 @@ public class HtmlUnitDriverRemoteCookieTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToDeleteAllCookies() {
         setupCookies();
-        HttpResponse response = server.deleteAllCookies(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.deleteAllCookies(sessionId);
         assertEquals("Failed deleting all cookies", HTTP_OK, response.getStatus());
         assertEquals("Count of cookies", Set.of(), getWebDriver().manage().getCookies());
     }

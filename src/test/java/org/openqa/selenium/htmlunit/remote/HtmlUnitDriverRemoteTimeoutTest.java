@@ -31,7 +31,7 @@ import org.openqa.selenium.remote.http.HttpResponse;
 public class HtmlUnitDriverRemoteTimeoutTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToGetTimeouts() {
-        HttpResponse response = server.getTimeouts(sessionId);
+        HttpResponse response = HtmlUnitDriverServer.getTimeouts(sessionId);
         assertEquals("Failed getting timeouts", HTTP_OK, response.getStatus());
         Map<String, Object> timeouts = extractMap(response);
         assertEquals("Script timeout", 0L, timeouts.get("script"));
@@ -44,7 +44,7 @@ public class HtmlUnitDriverRemoteTimeoutTest extends RemoteWebDriverTestCase {
         CommandPayload payload = new CommandPayload(DriverCommand.SET_TIMEOUT,
                 Map.of("script", 7L, "pageLoad", 15L, "implicit", 31L));
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
-        HttpResponse response = server.setTimeouts(request, sessionId);
+        HttpResponse response = HtmlUnitDriverServer.setTimeouts(request, sessionId);
         assertEquals("Failed setting timeouts", HTTP_OK, response.getStatus());
         Map<String, Object> timeouts = extractMap(response);
         assertEquals("Script timeout", 7L, timeouts.get("script"));
