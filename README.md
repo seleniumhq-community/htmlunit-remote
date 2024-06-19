@@ -7,7 +7,7 @@
 
 To eliminate behavioral differences between local and remote configurations, the [Selenium Foundation](https://github.com/sbabcoc/Selenium-Foundation) framework always acquires browser sessions from a **Grid** instance, managing a local grid instance when not configured to use an existing instance. The lack of **HtmlUnitDriver** support in **Selenium 4 Grid** necessitated reconfiguring the project unit tests from using this Java-only managed artifact to using a standard browser like Chrome, an external dependency that requires additional resources and imposes additional risks of failure.
 
-The driver service implemented by **HtmlUnit Remote** enables **Selenium 4 Grid** to supply **HtmlUnitDriver** session.
+The driver service implemented by **HtmlUnit Remote** enables **Selenium 4 Grid** to supply **HtmlUnitDriver** sessions.
 
 ### Implementation Details
 
