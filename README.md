@@ -17,7 +17,7 @@ The driver service implemented by **HtmlUnit Remote** enables **Selenium 4 Grid*
 * **HtmlUnitDriverServer** - This is the server class that hosts **HtmlUnitDriver** instances. It implements the [W3C WebDriver protocol](https://www.w3.org/TR/webdriver2):
 	* Create new driver sessions
 	* Route driver commands to specified driver sessions
-	* Assemble driver method results into HTTP responses
+	* Package driver method results into HTTP responses
 
 In operation, **HtmlUnitDriverService** is instantiated by **Selenium 4 Grid** node servers that are configured to support **HtmlUnitDriver**. Unlike other driver services, which launch a new process for each created driver session, **HtmlUnitDriverService** starts a single in-process server that hosts all of the driver sessions it creates.
 
