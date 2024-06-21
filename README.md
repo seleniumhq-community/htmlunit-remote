@@ -1,4 +1,4 @@
-# INTRODUCTION
+# HtmlUnit Remote
 **HtmlUnit Remote** is a driver service for [HtmlUnitDriver](https://github.com/SeleniumHQ/htmlunit-driver) that enables you to acquire driver sessions from [Selenium 4 Grid](https://www.selenium.dev/documentation/grid).
 
 ### Background
