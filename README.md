@@ -30,6 +30,9 @@ detect-drivers = false
 [[node.driver-configuration]]
 display-name = "HtmlUnit"
 stereotype = "{\"browserName\": \"htmlunit\"}"
+
+[distributor]
+slot-matcher = "org.openqa.selenium.htmlunit.remote.HtmlUnitSlotMatcher"
 ```
 
 > Written with [StackEdit](https://stackedit.io/).
