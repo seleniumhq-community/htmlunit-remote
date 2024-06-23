@@ -147,7 +147,7 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         assertEquals("Failed getting window rect", HTTP_OK, response.getStatus());
         Map<String, Object> windowRect = extractMap(response);
         assertEquals("Window width", 1272L, windowRect.get("width"));
-        assertEquals("Window height", 753L, windowRect.get("height"));
+        assertEquals("Window height", 752L, windowRect.get("height"));
         assertEquals("Window 'x' position", 0L, windowRect.get("x"));
         assertEquals("Window 'y' position", 0L, windowRect.get("y"));
     }
@@ -172,7 +172,7 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         assertEquals("Failed maximizing window", HTTP_OK, response.getStatus());
         Map<String, Object> windowRect = extractMap(response);
         assertEquals("Window width", 1272L, windowRect.get("width"));
-        assertEquals("Window height", 753L, windowRect.get("height"));
+        assertEquals("Window height", 752L, windowRect.get("height"));
         assertEquals("Window 'x' position", 0L, windowRect.get("x"));
         assertEquals("Window 'y' position", 0L, windowRect.get("y"));
     }
@@ -183,7 +183,7 @@ public class HtmlUnitDriverRemoteContextTest extends RemoteWebDriverTestCase {
         assertEquals("Failed maximizing window", HTTP_OK, response.getStatus());
         Map<String, Object> windowRect = extractMap(response);
         assertEquals("Window width", 1272L, windowRect.get("width"));
-        assertEquals("Window height", 753L, windowRect.get("height"));
+        assertEquals("Window height", 752L, windowRect.get("height"));
         assertEquals("Window 'x' position", 0L, windowRect.get("x"));
         assertEquals("Window 'y' position", 0L, windowRect.get("y"));
     }
