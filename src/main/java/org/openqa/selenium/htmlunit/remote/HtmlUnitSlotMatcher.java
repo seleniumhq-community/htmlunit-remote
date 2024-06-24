@@ -1,11 +1,10 @@
 package org.openqa.selenium.htmlunit.remote;
 
-import java.io.Serializable;
 import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.grid.data.SlotMatcher;
+import org.openqa.selenium.grid.data.DefaultSlotMatcher;
 import org.openqa.selenium.remote.Browser;
 
-public class HtmlUnitSlotMatcher implements SlotMatcher, Serializable {
+public class HtmlUnitSlotMatcher extends DefaultSlotMatcher {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,7 +19,11 @@ public class HtmlUnitSlotMatcher implements SlotMatcher, Serializable {
             return false;
         }
         
-        return Browser.HTMLUNIT.is(capabilities);
+        if (Browser.HTMLUNIT.is(stereotype) && Browser.HTMLUNIT.is(capabilities)) {
+            return true;
+        }
+        
+        return super.matches(stereotype, capabilities);
     }
 
     private Boolean managedDownloadsEnabled(Capabilities stereotype, Capabilities capabilities) {
