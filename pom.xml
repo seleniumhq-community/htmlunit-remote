@@ -9,7 +9,25 @@
   <version>4.22.0-SNAPSHOT</version>
 
   <name>htmlunit-remote</name>
+  <description>This is the remote wrapper for HtmlUnitDriver</description>
+  <url>https://github.com/sbabcoc/htmlunit-remote</url>
+  
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
+  <developers>
+    <developer>
+      <name>Scott Babcock</name>
+      <email>scoba@hotmail.com</email>
+      <organization>Nordstrom</organization>
+      <organizationUrl>https://shop.nordstrom.com</organizationUrl>
+    </developer>
+  </developers>
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -22,6 +40,24 @@
     <dependencycheck.version>9.1.0</dependencycheck.version>
     <skipSigning>true</skipSigning>
   </properties>
+
+  <scm>
+    <connection>scm:git:https://github.com/sbabcoc/htmlunit-remote.git</connection>
+    <developerConnection>scm:git:https://github.com/sbabcoc/htmlunit-remote.git</developerConnection>
+    <url>https://github.com/sbabcoc/htmlunit-remote/tree/master</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
