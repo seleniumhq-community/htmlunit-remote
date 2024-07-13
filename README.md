@@ -6,7 +6,7 @@
 
 ### Background
 
-To eliminate behavioral differences between local and remote configurations, the [Selenium Foundation](https://github.com/sbabcoc/Selenium-Foundation) framework always acquires browser sessions from a **Grid** instance, managing a local grid instance when not configured to use an existing instance. **Selenium 3 Grid** could be configured to supply **HtmlUnitDriver** sessions, supported by special-case handling within the Node server itself. This handling was not carried over into **Selenium 4 Grid**, which was completely re-engineered with new architecture and vastly expanded capabilities.
+To eliminate behavioral differences between local and remote configurations, the [Selenium Foundation](https://github.com/sbabcoc/Selenium-Foundation) framework always acquires browser sessions from a **Grid** instance, managing its own local grid instance when not configured to use an existing instance. **Selenium 3 Grid** could be configured to supply **HtmlUnitDriver** sessions, supported by special-case handling within the Node server itself. This handling was not carried over into **Selenium 4 Grid**, which was completely re-engineered with new architecture and vastly expanded capabilities.
 
 The lack of **HtmlUnitDriver** support in **Selenium 4 Grid** necessitated reconfiguring the **Selenium Foundation** project unit tests from using this Java-only managed artifact to using a standard browser like Chrome, an external dependency that requires additional resources and imposes additional risks of failure.
 
