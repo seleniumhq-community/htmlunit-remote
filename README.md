@@ -37,4 +37,11 @@ stereotype = "{\"browserName\": \"htmlunit\"}"
 slot-matcher = "org.openqa.selenium.htmlunit.remote.HtmlUnitSlotMatcher"
 ```
 
+The `selenium-server` JAR doesn't include the **HtmlUnitDriver** artifacts; these need to be specified as extensions to the grid class path via the `--ext` option:
+
+```
+java -jar selenium-server-<version>.jar --ext htmlunit-remote-<version>-grid-extension.jar standalone --config htmlunit.toml
+```
+The `grid-extension` artifact provides all of the specifications and service providers required to enable **Selenium 4 Grid** to supply remote sessions of **HtmlUnitDriver**. This artifact combines `htmlunit-remote` with `htmlunit3-driver`, `htmlunit`, and all of their unique dependencies.
+
 > Written with [StackEdit](https://stackedit.io/).
