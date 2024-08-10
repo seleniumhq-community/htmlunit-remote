@@ -25,8 +25,10 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.htmlunit.WebDriverTestCase;
@@ -60,6 +62,18 @@ public class RemoteWebDriverTestCase extends WebDriverTestCase {
         sessionId = createDriverSession();
     }
     
+    @After
+    public void cleanUp() {
+        if (sessionId != null) {
+            try {
+                closeDriverSession();
+            } catch (NoSuchSessionException e) {
+                // nothing to do here
+            }
+            sessionId = null;
+        }
+    }
+    
     @Override
     protected WebDriver getWebDriver() {
         return HtmlUnitDriverServer.getDriverSession(sessionId);
@@ -90,6 +104,21 @@ public class RemoteWebDriverTestCase extends WebDriverTestCase {
         request.setHeader(HttpHeader.ContentType.getName(), JSON_UTF_8);
         request.setContent(payload.getSupplier());
         return request;
+    }
+    
+    private void closeDriverSession() throws NoSuchSessionException {
+        List<String> windowHandles = getWindowHandles(sessionId);
+        while ( ! windowHandles.isEmpty()) {
+            HttpResponse response = HtmlUnitDriverServer.closeWindow(sessionId);
+            assertEquals("Failed closing window", HTTP_OK, response.getStatus());
+            windowHandles = extractListOfStrings(response);
+        }
+    }
+    
+    private List<String> getWindowHandles(final String sessionId) throws NoSuchSessionException {
+        HttpResponse response = HtmlUnitDriverServer.getWindowHandles(sessionId);
+        assertEquals("Failed getting window handles", HTTP_OK, response.getStatus());
+        return extractListOfStrings(response);
     }
     
     protected <T> T extractValueOfType(final HttpResponse response, final Type type) {

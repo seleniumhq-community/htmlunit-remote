@@ -40,6 +40,7 @@ public class JsonToHtmlUnitWebElementConverter extends JsonToWebElementConverter
             } catch (Exception e) {
                 // nothing to do here
             }
+            return result;
         }
         
         return super.apply(result);
