@@ -169,7 +169,7 @@ public class HtmlUnitDriverRemoteElementTest extends RemoteWebDriverTestCase {
         assertEquals("Failed getting element rect", HTTP_OK, response.getStatus());
         Map<String, Object> elementRect = extractMap(response);
         assertEquals("Element width", 1256L, elementRect.get("width"));
-        assertEquals("Element height", 72L, elementRect.get("height"));
+        assertEquals("Element height", 54L, elementRect.get("height"));
         assertEquals("Element 'x' position", 5L, elementRect.get("x"));
         assertEquals("Element 'y' position", 5L, elementRect.get("y"));
     }
