@@ -34,7 +34,17 @@ import org.openqa.selenium.internal.Require;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
 
+/**
+ * This class performs the coercion from <b>JSON</b> to the encoded {@link Actions} object.
+ */
 public class ActionsCoercer {
+    
+    /**
+     * Decode the specified input into the corresponding actions.
+     * 
+     * @param input encoded {@link JsonInput} object
+     * @return decoded {@link Actions} object
+     */
     @SuppressWarnings("unchecked")
     public static Actions fromJson(final JsonInput input) {
         // extract list of serialized sequences
@@ -116,31 +126,73 @@ public class ActionsCoercer {
         return actionsWrapper;
     }
     
+    /**
+     * Decode an encoded {@code pause} action.
+     * 
+     * @param source input source device
+     * @param action encoded {@link Pause} action 
+     * @return decoded 'pause' {@link Interaction} object
+     */
     public static Interaction pause(final InputSource source, final Map<String, Object> action) {
         Duration duration = Duration.ofMillis((Long) action.get("duration"));
         return new Pause(source, duration);
     }
     
+    /**
+     * Decode an encoded {@code keyDown} action.
+     * 
+     * @param source input source device
+     * @param action encoded 'keyDown' <b>TypingInteraction</b> action 
+     * @return decoded 'keyDown' {@link Interaction} object
+     */
     public static Interaction keyDown(final InputSource source, final Map<String, Object> action) {
         String value = action.get("value").toString();
         return ((KeyInput) source).createKeyDown(value.codePointAt(0));
     }
     
+    /**
+     * Decode an encoded {@code keyUp} action.
+     * 
+     * @param source input source device
+     * @param action encoded 'keyUp' <b>TypingInteraction</b> action 
+     * @return decoded 'keyUp' {@link Interaction} object
+     */
     public static Interaction keyUp(final InputSource source, final Map<String, Object> action) {
         String value = action.get("value").toString();
         return ((KeyInput) source).createKeyUp(value.codePointAt(0));
     }
     
+    /**
+     * Decode an encoded {@code pointerDown} action.
+     * 
+     * @param source input source device
+     * @param action encoded 'pointerDown' <b>PointerPress</b> action 
+     * @return decoded 'pointerDown' {@link Interaction} object
+     */
     public static Interaction pointerDown(final InputSource source, final Map<String, Object> action) {
         int button = ((Number) action.get("button")).intValue();
         return ((PointerInput) source).createPointerDown(button, eventProperties(action));
     }
 
+    /**
+     * Decode an encoded {@code pointerUp} action.
+     * 
+     * @param source input source device
+     * @param action encoded 'pointerUp' <b>PointerPress</b> action 
+     * @return decoded 'pointerUp' {@link Interaction} object
+     */
     public static Interaction pointerUp(final InputSource source, final Map<String, Object> action) {
         int button = ((Number) action.get("button")).intValue();
         return ((PointerInput) source).createPointerUp(button, eventProperties(action));
     }
     
+    /**
+     * Decode an encoded {@code pointerMove} action.
+     * 
+     * @param source input source device
+     * @param action encoded <b>Move</b> action 
+     * @return decoded 'pointerMove' {@link Interaction} object
+     */
     public static Interaction pointerMove(final InputSource source, final Map<String, Object> action) {
         Duration duration = Duration.ofMillis((Long) action.get("duration")); 
         Origin origin = origin(action.get("origin"));
@@ -149,6 +201,13 @@ public class ActionsCoercer {
         return ((PointerInput) source).createPointerMove(duration, origin, x, y, eventProperties(action));
     }
 
+    /**
+     * Decode an encoded {@code scroll} action.
+     * 
+     * @param source input source device
+     * @param action encoded <b>ScrollInteraction</b> action 
+     * @return decoded 'scroll' {@link Interaction} object
+     */
     public static Interaction scroll(final InputSource source, final Map<String, Object> action) {
         Duration duration = Duration.ofMillis((Long) action.get("duration")); 
         ScrollOrigin origin = scrollOrigin(action.get("origin"));
@@ -157,6 +216,12 @@ public class ActionsCoercer {
         return ((WheelInput) source).createScroll(x, y, 0, 0, duration, origin);
     }
     
+    /**
+     * Decode the specified raw properties into a pointer event properties object.
+     * 
+     * @param rawProperties raw properties map
+     * @return decoded {@link PointerEventProperties} object
+     */
     private static PointerEventProperties eventProperties(final Map<String, Object> rawProperties) {
         PointerEventProperties eventProperties = new PointerEventProperties();
         for (Entry<String, Object> rawProperty : rawProperties.entrySet()) {
@@ -193,6 +258,12 @@ public class ActionsCoercer {
         return eventProperties;
     }
     
+    /**
+     * Create a pointer origin object from the specified raw origin.
+     * 
+     * @param rawOrigin raw origin object
+     * @return decoded {@link Origin} object
+     */
     private static Origin origin(final Object rawOrigin) {
         try {
             Constructor<Origin> ctor = Origin.class.getDeclaredConstructor(Object.class);
@@ -203,6 +274,12 @@ public class ActionsCoercer {
         }
     }
     
+    /**
+     * Create a scroll origin object from the specified raw origin.
+     * 
+     * @param originObject raw origin object
+     * @return decoded {@link ScrollOrigin} object
+     */
     private static ScrollOrigin scrollOrigin(Object originObject) {
         try {
             Constructor<ScrollOrigin> ctor = ScrollOrigin.class.getDeclaredConstructor(Object.class, int.class, int.class);
@@ -213,6 +290,9 @@ public class ActionsCoercer {
         }
     }
     
+    /**
+     * This is a wrapper class for decoded {@link Actions} objects that facilitates element reference resolution.
+     */
     static class ActionsWrapper extends Actions {
         private WebDriverWrapper driverWrapper;
 
@@ -221,23 +301,43 @@ public class ActionsCoercer {
             this.driverWrapper = driver;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Action build() {
             Require.nonNull("[ActionsWrapper] Action origins unresolved; call 'resolveOrigins' first", driverWrapper.driver);
             return super.build();
         }
         
+        /**
+         * Resolve origin element references of actions within this {@link Actions} object.
+         *  
+         * @param driver target {@link HtmlUnitDriver}
+         * @return this {@link Actions} object
+         */
         public Actions resolveOrigins(final HtmlUnitDriver driver) {
             this.driverWrapper.driver = Require.nonNull("Driver", driver);
             resolveInteractionOriginElements(driver);
             return this;
         }
         
+        /**
+         * Iterate over the actions of this {@link Actions} object, resolving origin element references.
+         * 
+         * @param driver target {@link HtmlUnitDriver}
+         */
         private void resolveInteractionOriginElements(final HtmlUnitDriver driver) {
             final JsonToHtmlUnitWebElementConverter elementConverter = new JsonToHtmlUnitWebElementConverter(driver);
             getSequences().stream().map(this::actions).forEach(action -> elementConverter.apply(action));
         }
         
+        /**
+         * Obtain a reference to the list of actions within the specified sequence object.
+         * 
+         * @param sequence {@link Sequence} object
+         * @return list of {@link Encodable} objects with the specified sequence
+         */
         @SuppressWarnings("unchecked")
         private List<Encodable> actions(final Sequence sequence) {
             try {
@@ -250,79 +350,127 @@ public class ActionsCoercer {
         }
     }
     
+    /**
+     * This wrapper class provides placeholder objects for the drivers used by {@link ActionsCoercer} objects.
+     */
     private static class WebDriverWrapper implements WebDriver, Interactive {
         private WebDriver driver;
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void perform(Collection<Sequence> actions) {
             ((Interactive) driver).perform(actions);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void resetInputState() {
             ((Interactive) driver).resetInputState();
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void get(String url) {
             driver.get(url);
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getCurrentUrl() {
             return driver.getCurrentUrl();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getTitle() {
             return driver.getTitle();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public List<WebElement> findElements(By by) {
             return driver.findElements(by);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public WebElement findElement(By by) {
             return driver.findElement(by);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getPageSource() {
             return driver.getPageSource();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void close() {
             driver.close();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void quit() {
             driver.quit();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Set<String> getWindowHandles() {
             return driver.getWindowHandles();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getWindowHandle() {
             return driver.getWindowHandle();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public TargetLocator switchTo() {
             return driver.switchTo();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Navigation navigate() {
             return driver.navigate();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Options manage() {
             return driver.manage();
