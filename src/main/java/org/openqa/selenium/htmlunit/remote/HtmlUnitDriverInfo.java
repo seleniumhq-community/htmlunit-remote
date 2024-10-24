@@ -32,49 +32,80 @@ import org.openqa.selenium.htmlunit.options.HtmlUnitDriverOptions;
 
 import com.google.auto.service.AutoService;
 
+/**
+ * Describes an {@link HtmlUnitDriver} instance. This allows services to query the system at
+ * run time and offer <b>HtmlUnitDriver</b> instances should they be available.
+ */
 @AutoService(WebDriverInfo.class)
 public class HtmlUnitDriverInfo implements WebDriverInfo {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDisplayName() {
         return "HtmlUnit";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Capabilities getCanonicalCapabilities() {
         return new ImmutableCapabilities(BROWSER_NAME, HTMLUNIT.browserName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isSupporting(final Capabilities capabilities) {
         return HTMLUNIT.is(capabilities);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isSupportingCdp() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isSupportingBiDi() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isAvailable() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isPresent() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getMaximumSimultaneousSessions() {
         return Runtime.getRuntime().availableProcessors();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<WebDriver> createDriver(final Capabilities capabilities) throws SessionNotCreatedException {
         if (!isAvailable()) {
@@ -83,5 +114,4 @@ public class HtmlUnitDriverInfo implements WebDriverInfo {
         
         return Optional.of(new HtmlUnitDriver(new HtmlUnitDriverOptions().merge(capabilities)));
     }
-
 }
