@@ -46,6 +46,10 @@ public class HtmlUnitDriverRemoteActionsTest extends RemoteWebDriverTestCase {
     }
 
     @Test
+    public void actionsWarmup() {
+    }
+
+    @Test
     public void shouldBeAbleToReleaseActions() {
         HttpResponse response = HtmlUnitDriverServer.releaseActions(sessionId);
         assertEquals("Failed releasing actions", HTTP_OK, response.getStatus());
