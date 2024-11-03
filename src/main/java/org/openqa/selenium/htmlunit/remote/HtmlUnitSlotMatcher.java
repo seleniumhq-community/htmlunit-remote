@@ -4,6 +4,11 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.grid.data.DefaultSlotMatcher;
 import org.openqa.selenium.remote.Browser;
 
+/**
+ * This slot matcher extends {@link DefaultSlotMatcher}, returning {@code true} if both stereotype
+ * and capabilities specify the {@code htmlunit} browser name. Otherwise, evaluation is forwarded
+ * to the super-type implementation.
+ */
 public class HtmlUnitSlotMatcher extends DefaultSlotMatcher {
 
     private static final long serialVersionUID = 1L;
