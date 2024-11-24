@@ -5,7 +5,7 @@
 
   <groupId>com.nordstrom.ui-tools</groupId>
   <artifactId>htmlunit-remote</artifactId>
-  <version>4.26.0</version>
+  <version>4.26.1-SNAPSHOT</version>
 
   <name>htmlunit-remote</name>
   <description>This is the remote wrapper for HtmlUnitDriver</description>
