@@ -419,7 +419,12 @@ public class HtmlUnitDriverServer extends NettyServer {
             get("/status").to(() -> req -> successWithData(Map.of("ready", true, "message", "HtmlUnitDriverServer is ready."))),
             get("/readyz").to(() -> req -> new HttpResponse().setStatus(HTTP_NO_CONTENT))),
             null
-        );
+        ) {
+            @Override
+            public void close() {
+                // TODO: Add implementation
+            }
+        };
     }
     
     /**

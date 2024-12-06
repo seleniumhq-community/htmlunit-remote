@@ -84,7 +84,13 @@ public abstract class WebDriverTestCase extends WebTestCase {
                     get(TestPage.FRAME_C.path).to(() -> req -> getPageFromResource("Frame_C.html")),
                     get(TestPage.FRAME_D.path).to(() -> req -> getPageFromResource("Frame_D.html")),
                     get("/readyz").to(() -> req -> new HttpResponse().setStatus(HTTP_NO_CONTENT))),
-                    null);
+                    null
+            ) {
+                @Override
+                public void close() {
+                    // TODO: Add implementation
+                }
+            };
         }
         
         private static HttpResponse getPageFromResource(final String resource) {
