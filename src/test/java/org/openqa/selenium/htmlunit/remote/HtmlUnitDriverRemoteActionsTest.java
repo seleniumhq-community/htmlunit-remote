@@ -19,6 +19,8 @@ package org.openqa.selenium.htmlunit.remote;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
+import java.time.Duration;
+
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.htmlunit.HtmlUnitWebElement;
@@ -36,7 +38,9 @@ public class HtmlUnitDriverRemoteActionsTest extends RemoteWebDriverTestCase {
         HtmlUnitWebElement clickable = (HtmlUnitWebElement) getWebDriver().findElement(By.id("clickable"));
         Actions actions = new Actions(getWebDriver())
                 .moveToElement(clickable)
+                .pause(Duration.ofSeconds(1))
                 .click()
+                .pause(Duration.ofSeconds(1))
                 .sendKeys("abc");
         CommandPayload payload = DriverCommand.ACTIONS(actions.getSequences());
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
