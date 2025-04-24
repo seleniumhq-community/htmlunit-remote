@@ -82,7 +82,7 @@ public class HtmlUnitDriverServer extends NettyServer {
      * @param options {@link BaseServerOptions} object
      */
     public HtmlUnitDriverServer(BaseServerOptions options) {
-        super(options, createHandlers().httpHandler);
+        super(options, HANDLERS.httpHandler);
     }
 
     private static final Type MAP_OF_LONGS = new TypeToken<Map<String, Long>>() {}.getType();
@@ -92,9 +92,19 @@ public class HtmlUnitDriverServer extends NettyServer {
     private static final Type MAP_OF_ACTIONS = new TypeToken<Map<String, ActionsCoercer>>() {}.getType();
     private static final Type MAP_OF_COOKIES = new TypeToken<Map<String, CookieCoercer>>() {}.getType();
     
+    private static final Handlers HANDLERS = createHandlers();
     private static final Logger LOG = Logger.getLogger(HtmlUnitDriverServer.class.getName());
-
     private static Map<String, HtmlUnitDriver> driverMap = new ConcurrentHashMap<>();
+    
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                HANDLERS.close();
+                LOG.info("HtmlUnitDriverServer handlers have closed");
+            }
+        });
+    }
     
     /**
      * Define the handlers for the routes supported by this server.
@@ -386,7 +396,6 @@ public class HtmlUnitDriverServer extends NettyServer {
                 public HttpResponse execute(final HttpRequest req) throws UncheckedIOException {
                     return releaseActions(sessionIdFrom(params));
                 }
-                
             }),
             post("/session/{sessionId}/alert/dismiss").to(params -> new HttpHandler() {
                 @Override
@@ -422,7 +431,7 @@ public class HtmlUnitDriverServer extends NettyServer {
         ) {
             @Override
             public void close() {
-                // TODO: Add implementation
+                // nothing to do here
             }
         };
     }
