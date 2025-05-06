@@ -59,10 +59,10 @@ public abstract class WebDriverTestCase extends WebTestCase {
     private static final Executor EXECUTOR_POOL = Executors.newFixedThreadPool(4);
 
     private static class ServerHolder {
-        private static final Server<?> INSTANCE;
+        private static final Handlers HANDLERS = createHandlers();
+        private static final Server<?> INSTANCE = new NettyServer(defaultOptions(), HANDLERS.httpHandler);
         
         static {
-            INSTANCE = new NettyServer(defaultOptions(), createHandlers().httpHandler);
             INSTANCE.start();
             
             Runtime.getRuntime().addShutdownHook(
@@ -70,8 +70,12 @@ public abstract class WebDriverTestCase extends WebTestCase {
                         @Override
                         public void run() {
                             INSTANCE.stop();
+                            HANDLERS.close();
+                            LOG.info("Example site web server has stopped");
                         }
                     });
+            
+            LOG.info("Example site web server has started");
         }
 
         private static Handlers createHandlers() {
