@@ -5,7 +5,7 @@
 
   <groupId>com.nordstrom.ui-tools</groupId>
   <artifactId>htmlunit-remote</artifactId>
-  <version>4.32.0</version>
+  <version>4.32.1-SNAPSHOT</version>
 
   <name>htmlunit-remote</name>
   <description>This is the remote wrapper for HtmlUnitDriver</description>
@@ -45,7 +45,7 @@
     <connection>scm:git:https://github.com/sbabcoc/htmlunit-remote.git</connection>
     <developerConnection>scm:git:https://github.com/sbabcoc/htmlunit-remote.git</developerConnection>
     <url>https://github.com/sbabcoc/htmlunit-remote/tree/master</url>
-    <tag>htmlunit-remote-4.32.0</tag>
+    <tag>htmlunit-remote-4.30.0</tag>
   </scm>
 
   <distributionManagement>
