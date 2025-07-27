@@ -40,6 +40,11 @@ import org.openqa.selenium.json.JsonInput;
 public class ActionsCoercer {
     
     /**
+     * Default constructor
+     */
+    public ActionsCoercer() { }
+    
+    /**
      * Decode the specified input into the corresponding actions.
      * 
      * @param input encoded {@link JsonInput} object

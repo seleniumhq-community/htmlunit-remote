@@ -13,6 +13,11 @@ public class HtmlUnitSlotMatcher extends DefaultSlotMatcher {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Default constructor
+     */
+    public HtmlUnitSlotMatcher() { }
+    
     @Override
     public boolean matches(Capabilities stereotype, Capabilities capabilities) {
 
