@@ -16,6 +16,12 @@ import org.openqa.selenium.remote.WebElementToJsonConverter;
  *     WebDriver JSON Wire Protocol</a>
  */
 public class HtmlUnitWebElementToJsonConverter extends WebElementToJsonConverter {
+    
+    /**
+     * Default constructor
+     */
+    public HtmlUnitWebElementToJsonConverter() { }
+    
     @Override
     public Object apply(Object arg) {
         if (arg instanceof HtmlUnitWebElement) {

@@ -183,6 +183,11 @@ public class HtmlUnitDriverService extends DriverService {
     public static class Builder extends DriverService.Builder<HtmlUnitDriverService, HtmlUnitDriverService.Builder> {
         
         /**
+         * Default constructor
+         */
+        public Builder() { }
+        
+        /**
          * {@inheritDoc}
          */
         @Override

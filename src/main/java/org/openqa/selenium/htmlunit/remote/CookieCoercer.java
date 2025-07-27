@@ -13,6 +13,11 @@ import org.openqa.selenium.json.JsonInput;
 public class CookieCoercer {
 
     /**
+     * Default constructor
+     */
+    public CookieCoercer() { }
+    
+    /**
      * Decode the specified input into the corresponding cookie.
      * 
      * @param input encoded {@link JsonInput} object
