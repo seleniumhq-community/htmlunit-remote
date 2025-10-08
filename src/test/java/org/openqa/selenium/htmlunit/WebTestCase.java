@@ -28,12 +28,9 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.htmlunit.BrowserVersion;
 import org.htmlunit.MockWebConnection;
 import org.junit.After;
@@ -54,9 +51,6 @@ import org.junit.BeforeClass;
  * @author Ronald Brill
  */
 public abstract class WebTestCase {
-
-    /** Logging support. */
-    private static final Log LOG = LogFactory.getLog(WebTestCase.class);
 
     /** save the environment */
     private static final Locale SAVE_LOCALE = Locale.getDefault();
