@@ -34,6 +34,7 @@ import org.openqa.selenium.remote.http.HttpResponse;
 public class HtmlUnitDriverRemoteNavigationTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToNavigateToUrl() {
+        suppressCssErrorsAndIncorrectnessWarnings();
         CommandPayload payload = DriverCommand.GET(HTMLUNIT_HOME);
         HttpRequest request = commandCodec.encode(new Command(sessionId(), payload));
         HttpResponse response = HtmlUnitDriverServer.navigateTo(request, sessionId);
@@ -43,6 +44,7 @@ public class HtmlUnitDriverRemoteNavigationTest extends RemoteWebDriverTestCase 
     
     @Test
     public void shouldBeAbleToGetCurrentUrl() {
+        suppressCssErrorsAndIncorrectnessWarnings();
         getWebDriver().get(HTMLUNIT_HOME);
         HttpResponse response = HtmlUnitDriverServer.getCurrentUrl(sessionId);
         assertEquals("Failed getting current URL", HTTP_OK, response.getStatus());
@@ -51,6 +53,7 @@ public class HtmlUnitDriverRemoteNavigationTest extends RemoteWebDriverTestCase 
     
     @Test
     public void shouldBeAbleToNavigateBackAndForward() {
+        suppressCssErrorsAndIncorrectnessWarnings();
         getWebDriver().get(HTMLUNIT_HOME);
         getWebDriver().get(HTMLUNIT_HISTORY);
         assertEquals("Initial URL after setup", HTMLUNIT_HISTORY, getWebDriver().getCurrentUrl());
@@ -64,6 +67,7 @@ public class HtmlUnitDriverRemoteNavigationTest extends RemoteWebDriverTestCase 
     
     @Test(expected = StaleElementReferenceException.class)
     public void shouldBeAbleToRefreshSession() {
+        suppressCssErrorsAndIncorrectnessWarnings();
         getWebDriver().get(HTMLUNIT_HOME);
         WebElement bannerImage = getWebDriver().findElement(By.cssSelector("img[alt=HtmlUnit]"));
         HttpResponse response = HtmlUnitDriverServer.refreshSession(sessionId);

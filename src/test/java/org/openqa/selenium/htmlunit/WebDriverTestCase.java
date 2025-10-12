@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Logger;
+
 import org.htmlunit.BrowserVersion;
 import org.htmlunit.WebClient;
 import org.htmlunit.WebClientOptions;
@@ -52,7 +52,7 @@ import org.openqa.selenium.remote.http.Route;
 
 public abstract class WebDriverTestCase extends WebTestCase {
 
-    private static final Log LOG = LogFactory.getLog(WebDriverTestCase.class);
+    private static final Logger LOG = Logger.getLogger(WebDriverTestCase.class.getName());
 
     /** The driver cache. */
     protected static final Map<BrowserVersion, WebDriver> WEB_DRIVERS_ = new HashMap<>();

@@ -25,6 +25,9 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
+import org.htmlunit.SilentCssErrorHandler;
+import org.htmlunit.SilentIncorrectnessListener;
+import org.htmlunit.WebClient;
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.Capabilities;
@@ -48,6 +51,7 @@ public class RemoteWebDriverTestCase extends WebDriverTestCase {
     protected static final CommandCodec<HttpRequest> commandCodec;
     protected static final String HTMLUNIT_HOME = "https://www.htmlunit.org/";
     protected static final String HTMLUNIT_HISTORY = "https://www.htmlunit.org/history.html";
+    protected static final String MOUSE_INTERACTION = "https://www.selenium.dev/selenium/web/mouse_interaction.html";
     
     protected static final Type MAP_OF_OBJECTS = new TypeToken<Map<String, Object>>() {}.getType();
     
@@ -173,5 +177,11 @@ public class RemoteWebDriverTestCase extends WebDriverTestCase {
     
     protected Object toElement(final Object content) {
         return new JsonToHtmlUnitWebElementConverter((HtmlUnitDriver) getWebDriver()).apply(content);
+    }
+    
+    protected void suppressCssErrorsAndIncorrectnessWarnings() {
+        WebClient webClient = ((HtmlUnitDriver) getWebDriver()).getWebClient();
+        webClient.setCssErrorHandler(new SilentCssErrorHandler());
+        webClient.setIncorrectnessListener(new SilentIncorrectnessListener());
     }
 }

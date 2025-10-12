@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Test;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.json.TypeToken;
@@ -90,6 +91,7 @@ public class HtmlUnitDriverRemoteCookieTest extends RemoteWebDriverTestCase {
     }
     
     private void setupCookies() {
+        suppressCssErrorsAndIncorrectnessWarnings();
         getWebDriver().get(HTMLUNIT_HOME);
         getWebDriver().manage().addCookie(new Cookie("cookie1", "value1"));
         getWebDriver().manage().addCookie(new Cookie("cookie2", "value2"));

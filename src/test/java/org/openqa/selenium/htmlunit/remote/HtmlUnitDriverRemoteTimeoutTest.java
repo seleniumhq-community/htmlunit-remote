@@ -34,8 +34,8 @@ public class HtmlUnitDriverRemoteTimeoutTest extends RemoteWebDriverTestCase {
         HttpResponse response = HtmlUnitDriverServer.getTimeouts(sessionId);
         assertEquals("Failed getting timeouts", HTTP_OK, response.getStatus());
         Map<String, Object> timeouts = extractMap(response);
-        assertEquals("Script timeout", 0L, timeouts.get("script"));
-        assertEquals("Page load timeout", 0L, timeouts.get("pageLoad"));
+        assertEquals("Script timeout", 30_000L, timeouts.get("script"));
+        assertEquals("Page load timeout", 300_000L, timeouts.get("pageLoad"));
         assertEquals("Implicit timeout", 0L, timeouts.get("implicit"));
     }
     

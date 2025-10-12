@@ -34,7 +34,8 @@ import org.openqa.selenium.remote.http.HttpResponse;
 public class HtmlUnitDriverRemoteActionsTest extends RemoteWebDriverTestCase {
     @Test
     public void shouldBeAbleToProcessActions() throws Exception {
-        getWebDriver().get("https://www.selenium.dev/selenium/web/mouse_interaction.html");
+        suppressCssErrorsAndIncorrectnessWarnings();
+        getWebDriver().get(MOUSE_INTERACTION);
         HtmlUnitWebElement clickable = (HtmlUnitWebElement) getWebDriver().findElement(By.id("clickable"));
         Actions actions = new Actions(getWebDriver())
                 .moveToElement(clickable)
