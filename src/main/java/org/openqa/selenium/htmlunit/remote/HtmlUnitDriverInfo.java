@@ -24,13 +24,16 @@ import java.util.Optional;
 
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.ImmutableCapabilities;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverInfo;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.htmlunit.options.HtmlUnitDriverOptions;
+import org.openqa.selenium.remote.CapabilityType;
 
 import com.google.auto.service.AutoService;
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Describes an {@link HtmlUnitDriver} instance. This allows services to query the system at
@@ -117,6 +120,38 @@ public class HtmlUnitDriverInfo implements WebDriverInfo {
             return Optional.empty();
         }
         
-        return Optional.of(new HtmlUnitDriver(new HtmlUnitDriverOptions().merge(capabilities)));
+        Capabilities normalized = normalizeBrowserVersion(capabilities);
+        return Optional.of(new HtmlUnitDriver(new HtmlUnitDriverOptions().merge(normalized)));
+    }
+
+    /**
+     * The following implementation ensures grid-compatible handling of
+     * the [browserVersion] capability. If the standard [browserVersion]
+     * capability is defined, it's removed. If the [garg:browserVersion]
+     * is undefined, the original value of [browserVersion] is adopted.
+     * 
+     * @param capabilities {@link Capabilities} object to normalize
+     * @return grid-compatible capabilities with normalized [browserVersion]
+     */
+    @VisibleForTesting
+    static MutableCapabilities normalizeBrowserVersion(final Capabilities capabilities) {
+        // create mutable Capabilities object
+        MutableCapabilities mutable = new MutableCapabilities(capabilities);
+        // get standard [browserVersion] if non-null
+        Optional.ofNullable(mutable.getBrowserVersion())
+            // filter out if value is empty
+            .filter(versionVal -> !versionVal.isEmpty())
+            // if value exists
+            .ifPresent(versionVal -> {
+                // if vendor-specific browser version is undefined
+                if (mutable.getCapability(HtmlUnitDriverOptions.BROWSER_VERSION) == null) {
+                    // set value of vendor-specific browser version
+                    mutable.setCapability(HtmlUnitDriverOptions.BROWSER_VERSION, versionVal);
+                }
+                // remove standard [browserVersion] capability
+                mutable.setCapability(CapabilityType.BROWSER_VERSION, (String) null);
+            }
+        );
+        return mutable;
     }
 }
