@@ -44,4 +44,14 @@ java -jar selenium-server-<version>.jar --ext htmlunit-remote-<version>-grid-ext
 ```
 The `grid-extension` artifact provides all of the specifications and service providers required to enable **Selenium 4 Grid** to supply remote sessions of **HtmlUnitDriver**. This artifact combines `htmlunit-remote` with `htmlunit3-driver`, `htmlunit`, and all of their unique dependencies.
 
+### Specification of [browserVersion]
+
+In **HtmlUnit Driver**, you can use the standard `browserVersion` capability to select a specific browser emulation profile. This works as expected in local operation but will cause driver acquisition to fail in remote configurations. The reason for this is that `browserVersion` is an _identity_ value that the Selenium Grid distributor expects to match against the stereotype of a compatible node. In **HtmlUnit Driver**, `browserVersion` is a _configuration_ value, so this capability should not be considered for slot matching.
+
+**HtmlUnit Remote** adds a vendor-specific capability for selecting a specific browser emulation profile: `garg:browserVersion`.  If you use the standard **HtmlUnitDriverOptions** class to build your driver specification, this issue is handled for you automatically. If you specify driver capabilities directly, be sure to use this new vendor-specific capability name.
+
+```
+{"browserName": "htmlunit", "garg:browserVersion": "firefox-115"}
+```
+
 > Written with [StackEdit](https://stackedit.io/).
