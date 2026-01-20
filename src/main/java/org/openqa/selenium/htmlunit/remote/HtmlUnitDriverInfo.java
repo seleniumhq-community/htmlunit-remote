@@ -27,10 +27,10 @@ import org.openqa.selenium.ImmutableCapabilities;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverInfo;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.htmlunit.options.HtmlUnitDriverOptions;
 import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.WebDriverInfo;
 
 import com.google.auto.service.AutoService;
 import com.google.common.annotations.VisibleForTesting;
