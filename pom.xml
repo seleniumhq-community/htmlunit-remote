@@ -53,9 +53,9 @@
   </properties>
 
   <scm>
-    <connection>scm:git:https://github.com/sbabcoc/htmlunit-remote.git</connection>
-    <developerConnection>scm:git:https://github.com/sbabcoc/htmlunit-remote.git</developerConnection>
-    <url>https://github.com/sbabcoc/htmlunit-remote/tree/master</url>
+    <connection>scm:git:https://github.com/seleniumhq-community/htmlunit-remote.git</connection>
+    <developerConnection>scm:git:https://github.com/seleniumhq-community/htmlunit-remote.git</developerConnection>
+    <url>https://github.com/seleniumhq-community/htmlunit-remote</url>
     <tag>htmlunit-remote-4.30.0</tag>
   </scm>
 
