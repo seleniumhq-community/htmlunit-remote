@@ -56,7 +56,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Timeouts;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WindowType;
-import org.openqa.selenium.grid.TemplateGridServerCommand.Handlers;
 import org.openqa.selenium.grid.server.BaseServerOptions;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.htmlunit.options.HtmlUnitDriverOptions;
@@ -82,7 +81,7 @@ public class HtmlUnitDriverServer extends NettyServer {
      * @param options {@link BaseServerOptions} object
      */
     public HtmlUnitDriverServer(BaseServerOptions options) {
-        super(options, HANDLERS.httpHandler);
+        super(options, HANDLER);
     }
 
     private static final Type MAP_OF_LONGS = new TypeToken<Map<String, Long>>() {}.getType();
@@ -92,27 +91,17 @@ public class HtmlUnitDriverServer extends NettyServer {
     private static final Type MAP_OF_ACTIONS = new TypeToken<Map<String, ActionsCoercer>>() {}.getType();
     private static final Type MAP_OF_COOKIES = new TypeToken<Map<String, CookieCoercer>>() {}.getType();
     
-    private static final Handlers HANDLERS = createHandlers();
+    private static final HttpHandler HANDLER = createHandler();
     private static final Logger LOG = Logger.getLogger(HtmlUnitDriverServer.class.getName());
     private static Map<String, HtmlUnitDriver> driverMap = new ConcurrentHashMap<>();
-    
-    static {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                HANDLERS.close();
-                LOG.info("HtmlUnitDriverServer handlers have closed");
-            }
-        });
-    }
     
     /**
      * Define the handlers for the routes supported by this server.
      * 
-     * @return {@link Handlers} object
+     * @return {@link HttpHandler} object
      */
-    protected static Handlers createHandlers() {
-        return new Handlers(Route.combine(
+    protected static HttpHandler createHandler() {
+        return Route.combine(
             post("/session").to(() -> new HttpHandler() {
                 @Override
                 public HttpResponse execute(final HttpRequest req) throws UncheckedIOException {
@@ -426,14 +415,7 @@ public class HtmlUnitDriverServer extends NettyServer {
             get("/session/{sessionId}/element/{elementId}/screenshot")
                     .to(() -> req -> errorForException(new UnsupportedCommandException("Cannot take element screenshot"))),
             get("/status").to(() -> req -> successWithData(Map.of("ready", true, "message", "HtmlUnitDriverServer is ready."))),
-            get("/readyz").to(() -> req -> new HttpResponse().setStatus(HTTP_NO_CONTENT))),
-            null
-        ) {
-            @Override
-            public void close() {
-                // nothing to do here
-            }
-        };
+            get("/readyz").to(() -> req -> new HttpResponse().setStatus(HTTP_NO_CONTENT)));
     }
     
     /**
