@@ -114,7 +114,7 @@ public class HtmlUnitDriverService extends DriverService {
     }
     
     /**
-     * Get driver executable for {@link HtmlUnitDriver}
+     * Get driver executable for {@link HtmlUnitDriver}.
      * 
      * @return the current Java installation
      */
@@ -123,6 +123,28 @@ public class HtmlUnitDriverService extends DriverService {
         // specify current Java installation as executable
         setExecutable(ProcessHandle.current().info().command().get());
         return super.getExecutable();
+    }
+
+    /**
+     * Get the System property name for the path to {@link HtmlUnitDriver}.<br>
+     * <b>NOTE</b>: There is no <b>HtmlUnitDriver</b> binary, so {@code null} is returned.
+     * 
+     * @return driver path System property name
+     */
+    @Override
+    public String getDriverProperty() {
+        return null;
+    }
+
+    /**
+     * Get the environment variable name for the path to {@link HtmlUnitDriver}.<br>
+     * <b>NOTE</b>: There is no <b>HtmlUnitDriver</b> binary, so {@code null} is returned.
+     * 
+     * @return driver path environment variable name
+     */
+    @Override
+    protected String getDriverEnvironmentVariable() {
+        return null;
     }
     
     /**

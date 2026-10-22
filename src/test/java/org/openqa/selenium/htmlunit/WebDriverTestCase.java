@@ -38,7 +38,6 @@ import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.grid.TemplateGridServerCommand.Handlers;
 import org.openqa.selenium.grid.config.MapConfig;
 import org.openqa.selenium.grid.server.BaseServerOptions;
 import org.openqa.selenium.grid.server.Server;
@@ -47,6 +46,7 @@ import org.openqa.selenium.netty.server.NettyServer;
 import org.openqa.selenium.remote.Browser;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.http.Contents;
+import org.openqa.selenium.remote.http.HttpHandler;
 import org.openqa.selenium.remote.http.HttpResponse;
 import org.openqa.selenium.remote.http.Route;
 
@@ -59,8 +59,8 @@ public abstract class WebDriverTestCase extends WebTestCase {
     private static final Executor EXECUTOR_POOL = Executors.newFixedThreadPool(4);
 
     private static class ServerHolder {
-        private static final Handlers HANDLERS = createHandlers();
-        private static final Server<?> INSTANCE = new NettyServer(defaultOptions(), HANDLERS.httpHandler);
+        private static final HttpHandler HANDLER = createHandler();
+        private static final Server<?> INSTANCE = new NettyServer(defaultOptions(), HANDLER);
         
         static {
             INSTANCE.start();
@@ -70,7 +70,6 @@ public abstract class WebDriverTestCase extends WebTestCase {
                         @Override
                         public void run() {
                             INSTANCE.stop();
-                            HANDLERS.close();
                             LOG.info("Example site web server has stopped");
                         }
                     });
@@ -78,8 +77,8 @@ public abstract class WebDriverTestCase extends WebTestCase {
             LOG.info("Example site web server has started");
         }
 
-        private static Handlers createHandlers() {
-            return new Handlers(Route.combine(
+        private static HttpHandler createHandler() {
+            return Route.combine(
                     get(TestPage.HOME.path).to(() -> req -> getPageFromResource("ExamplePage.html")),
                     get(TestPage.SIMPLE.path).to(() -> req -> getPageFromResource("SimplePage.html")),
                     get(TestPage.ALERTS.path).to(() -> req -> getPageFromResource("AlertsPage.html")),
@@ -87,14 +86,7 @@ public abstract class WebDriverTestCase extends WebTestCase {
                     get(TestPage.FRAME_B.path).to(() -> req -> getPageFromResource("Frame_B.html")),
                     get(TestPage.FRAME_C.path).to(() -> req -> getPageFromResource("Frame_C.html")),
                     get(TestPage.FRAME_D.path).to(() -> req -> getPageFromResource("Frame_D.html")),
-                    get("/readyz").to(() -> req -> new HttpResponse().setStatus(HTTP_NO_CONTENT))),
-                    null
-            ) {
-                @Override
-                public void close() {
-                    // TODO: Add implementation
-                }
-            };
+                    get("/readyz").to(() -> req -> new HttpResponse().setStatus(HTTP_NO_CONTENT)));
         }
         
         private static HttpResponse getPageFromResource(final String resource) {
